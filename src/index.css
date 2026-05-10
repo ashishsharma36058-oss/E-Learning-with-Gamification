@@ -935,6 +935,7 @@ input::placeholder, textarea::placeholder { color: var(--text-3); }
   }
   to {
     transform: translateY(20px);
+    
   }
 }
 
@@ -943,4 +944,36 @@ input::placeholder, textarea::placeholder { color: var(--text-3); }
 form {
   position: relative;
   z-index: 2;
+}
+
+.dashboard-page {
+  max-width: 1100px !important;
+  margin: 0 auto !important;
+  padding: 48px 24px !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.dashboard-page .card {
+  padding: 22px !important;
+  border-radius: 16px !important;
+}
+
+.dashboard-page .grid-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+}
+
+.dashboard-page .grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+}
+
+.dashboard-bg {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
 }
