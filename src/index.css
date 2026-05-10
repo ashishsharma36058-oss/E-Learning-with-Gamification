@@ -517,7 +517,7 @@ input::placeholder, textarea::placeholder { color: var(--text-3); }
   height: 100vh !important;
   z-index: 0 !important;
   pointer-events: none;
-  overflow: hidden;
+  
 }
 
 .dashboard-bg::before {
@@ -586,10 +586,9 @@ input::placeholder, textarea::placeholder { color: var(--text-3); }
 .dashboard-page {
   position: relative;
   z-index: 2;
-  min-height: 100vh;
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 48px 24px;
+  padding: 40px;
 }
 @keyframes auroraSpin {
   from {
