@@ -34,6 +34,12 @@ export default function Dashboard() {
 
   return (
     <div className="container page-enter">
+
+      <div className="dashboard-bg">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
       {/* Greeting */}
       <div style={{ marginBottom: 28 }}>
         <h1 style={{ marginBottom: 6 }}>
