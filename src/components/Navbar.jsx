@@ -31,22 +31,9 @@ export default function Navbar() {
       justifyContent: 'space-between',
     }}>
       <Link to={isLoggedIn ? '/dashboard' : '/'} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8 }}>
-  <img
-    src={logo}
-    alt="logo"
-    style={{
-      width: 40,
-      height: 40,
-      borderRadius: 10
-    }}
 
-        <Link to={isLoggedIn ? '/dashboard' : '/'} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8 }}>
-        <div style={{
-          width: 30, height: 30, borderRadius: 8,
-          background: 'linear-gradient(135deg, var(--purple), var(--orange))',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 14, fontWeight: 800, color: '#fff',
-        }}>G</div>
+        <img src={logo} alt="logo" style={{ width: 40, height: 40, borderRadius: 10 }} />
+        
         <span style={{ fontWeight: 700, fontSize: 18, letterSpacing: '-0.3px', color: 'var(--text-1)' }}>
           Gamify
         </span>
