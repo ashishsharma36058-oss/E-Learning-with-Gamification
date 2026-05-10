@@ -163,8 +163,7 @@ return (
             Free forever. No credit card required.
           </p>
         )}
-      </div>
-    </>
+        
   )
 }
 
