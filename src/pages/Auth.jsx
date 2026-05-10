@@ -166,8 +166,10 @@ return (
         
     
     </div>
+    </div>
+    </>
 
-    )
+    );
     }
 
 export const LoginPage = () => <AuthPage mode="login" />
