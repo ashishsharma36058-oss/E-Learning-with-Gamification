@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import useStore from '../store/useStore'
 import toast from 'react-hot-toast'
+import logo from '../logo.png.png'
 
 const LANG_ICONS = { python: '🐍', javascript: '⚡', cpp: '⚙️', java: '☕' }
 
@@ -29,8 +30,17 @@ export default function Navbar() {
       padding: '0 24px',
       justifyContent: 'space-between',
     }}>
-      {/* Logo */}
       <Link to={isLoggedIn ? '/dashboard' : '/'} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8 }}>
+  <img
+    src={logo}
+    alt="logo"
+    style={{
+      width: 40,
+      height: 40,
+      borderRadius: 10
+    }}
+
+        <Link to={isLoggedIn ? '/dashboard' : '/'} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8 }}>
         <div style={{
           width: 30, height: 30, borderRadius: 8,
           background: 'linear-gradient(135deg, var(--purple), var(--orange))',
