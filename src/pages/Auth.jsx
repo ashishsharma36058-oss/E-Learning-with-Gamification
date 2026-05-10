@@ -37,7 +37,7 @@ function AuthPage({ mode }) {
         toast.success(`Welcome back, ${me.username}!`)
         navigate('/dashboard')
       } else {
-        await api.post('/auth/register', form)
+        await api.post('https://e-learning-with-gamification-2.onrender.com/api/auth/register', form)
         toast.success('Account created! Sign in to begin.')
         navigate('/login')
       }
