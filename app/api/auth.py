@@ -24,7 +24,6 @@ def get_current_user(request: Request, db: Session = Depends(get_db)) -> User:
     return user
 
 @router.post("/register")
-async def register(request: Request, body: UserRegister, db: Session = Depends(get_db)):
 @limiter.limit("5/minute")
 async def register(request: Request, body: UserRegister, db: Session = Depends(get_db)):
     if db.query(User).filter(User.username == body.username).first():
