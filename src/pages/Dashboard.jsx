@@ -32,86 +32,166 @@ export default function Dashboard() {
     { label: 'Current Streak',    value: loading ? '—' : `${user.streak_days}d`, sub: user.streak_days >= 5 ? '🔥 Bonus active' : 'Keep going!' },
   ]
 
-  return (
+return (
+  <>
+    <div className="dashboard-bg">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
     <div className="dashboard-page page-enter">
 
-      <div className="dashboard-bg">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
       {/* Greeting */}
       <div style={{ marginBottom: 28 }}>
         <h1 style={{ marginBottom: 6 }}>
           Welcome back, <span style={{ color: 'var(--purple-light)' }}>{user.username}</span> 👋
         </h1>
-        <p style={{ fontSize: 13, color: 'var(--text-3)', fontFamily: 'var(--mono)' }}>
-          // {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+
+        <p style={{
+          fontSize: 13,
+          color: 'var(--text-3)',
+          fontFamily: 'var(--mono)'
+        }}>
+          // {new Date().toLocaleDateString(undefined, {
+            weekday: 'long',
+            month: 'short',
+            day: 'numeric'
+          })}
         </p>
       </div>
 
-      {/* XP Bar */}
-      <XPBar user={user} />
+      {/* XP Card */}
+      <div className="card" style={{ marginBottom: 26 }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginBottom: 12
+        }}>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            <div className="badge">
+              LVL {user.level}
+            </div>
+            <span style={{ color: 'var(--text-2)' }}>
+              Beginner
+            </span>
+          </div>
 
-      {/* Stat Cards */}
-      <div className="grid-2" style={{ marginBottom: 28 }}>
-        {STAT_CARDS.map(s => (
-          <div key={s.label} className="stat-card">
-            <div className="stat-label">{s.label}</div>
-            <div className="stat-value">{s.value}</div>
-            <div className="stat-sub">{s.sub}</div>
+          <div style={{
+            color: 'var(--orange)',
+            fontFamily: 'var(--mono)'
+          }}>
+            {user.total_xp} / 300 XP
+          </div>
+        </div>
+
+        <div className="xpbar">
+          <div
+            className="xpbar-fill"
+            style={{
+              width: `${Math.min((user.total_xp / 300) * 100, 100)}%`
+            }}
+          />
+        </div>
+
+        <div style={{
+          marginTop: 10,
+          textAlign: 'right',
+          fontSize: 12,
+          color: 'var(--text-3)',
+          fontFamily: 'var(--mono)'
+        }}>
+          300 XP to Level {user.level + 1}
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-4" style={{ marginBottom: 28 }}>
+        {statsCards.map((card) => (
+          <div key={card.label} className="card">
+            <div className="label">{card.label}</div>
+
+            <div style={{
+              fontSize: 26,
+              fontWeight: 800,
+              color: 'var(--purple-light)',
+              marginBottom: 6
+            }}>
+              {card.value}
+            </div>
+
+            <div style={{
+              fontSize: 13,
+              color: 'var(--text-3)'
+            }}>
+              {card.sub}
+            </div>
           </div>
         ))}
       </div>
 
-      {/* Language Tracks — real data from API */}
+      {/* Languages */}
       <div style={{ marginBottom: 28 }}>
-        <div className="section-label">Language Tracks</div>
-        <div className="grid-4">
-          {LANG_TRACKS.map(lang => {
-            const langData = stats?.lang_stats?.[lang.key]
-            const pct     = langData ? langData.pct : 0
-            const done    = langData ? langData.completed : 0
-            const total   = langData ? langData.total : 0
+        <div className="section-title">
+          Language Tracks
+        </div>
 
-            return (
-              <div key={lang.key} className="card" style={{ padding: '18px', textAlign: 'center', cursor: 'pointer' }}>
-                <div style={{ fontSize: 28, marginBottom: 8 }}>{lang.icon}</div>
-                <div style={{ fontWeight: 700, fontSize: 13, color: lang.color, marginBottom: 4 }}>{lang.name}</div>
-                <div style={{ fontSize: 10, color: 'var(--text-3)', fontFamily: 'var(--mono)', marginBottom: 10 }}>
-                  {loading ? '...' : `${done} / ${total} solved`}
-                </div>
-                <div className="xp-bar-track">
-                  <div style={{
-                    height: '100%',
-                    width: loading ? '0%' : `${pct}%`,
-                    background: lang.color,
-                    borderRadius: 3,
-                    transition: 'width 1s ease',
-                  }} />
-                </div>
-                <div style={{ fontSize: 9, color: 'var(--text-4)', marginTop: 6, fontFamily: 'var(--mono)' }}>
-                  {loading ? '' : `${pct}%`}
-                </div>
+        <div className="grid grid-4">
+          {tracks.map((track) => (
+            <div key={track.name} className="card">
+              <div style={{
+                fontSize: 42,
+                marginBottom: 10
+              }}>
+                {track.icon}
               </div>
-            )
-          })}
+
+              <div style={{
+                fontWeight: 700,
+                marginBottom: 6,
+                color: track.color
+              }}>
+                {track.name}
+              </div>
+
+              <div style={{
+                color: 'var(--text-3)',
+                fontSize: 13
+              }}>
+                {track.done} / {track.total} solved
+              </div>
+
+              <div className="xpbar" style={{ marginTop: 14 }}>
+                <div
+                  className="xpbar-fill"
+                  style={{
+                    width: `${track.total ? (track.done / track.total) * 100 : 0}%`
+                  }}
+                />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Actions */}
-      <div style={{ display: 'flex', gap: 12 }}>
-        <Link to="/play" style={{ flex: 1 }}>
-          <button className="btn btn-primary" style={{ width: '100%', padding: '14px', fontSize: 15 }}>
-            ▶ Play Now
-          </button>
-        </Link>
-        <Link to="/leaderboard" style={{ flex: 1 }}>
-          <button className="btn btn-secondary" style={{ width: '100%', padding: '14px', fontSize: 15 }}>
-            🏆 View Rankings
-          </button>
-        </Link>
+      {/* Buttons */}
+      <div className="grid grid-2">
+        <button
+          className="btn btn-primary"
+          onClick={() => navigate('/play')}
+        >
+          ▶ Play Now
+        </button>
+
+        <button
+          className="btn"
+          onClick={() => navigate('/leaderboard')}
+        >
+          🏆 View Rankings
+        </button>
       </div>
+
     </div>
-  )
+  </>
+)
 }
