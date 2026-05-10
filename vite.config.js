@@ -8,7 +8,7 @@ export default defineConfig({
     host: '127.0.0.1',
     open: true,
     proxy: {
-      '/api': { target: 'http://127.0.0.1:8000', changeOrigin: true }
+      '/api': { target: "https://e-learning-with-gamification-2.onrender.com", changeOrigin: true }
     }
   }
 })
