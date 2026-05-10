@@ -508,3 +508,52 @@ input::placeholder, textarea::placeholder { color: var(--text-3); }
     opacity: 0;
   }
 }
+.dashboard-page {
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-page > *:not(.dashboard-bg) {
+  position: relative;
+  z-index: 2;
+}
+
+.dashboard-bg span {
+  position: absolute;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.35;
+  animation: dashboardFloat 10s infinite alternate ease-in-out;
+  z-index: 0;
+}
+
+.dashboard-bg span:nth-child(1) {
+  top: 10%;
+  left: 5%;
+  background: #7c3aed;
+}
+
+.dashboard-bg span:nth-child(2) {
+  top: 35%;
+  right: 8%;
+  background: #fb7185;
+  animation-delay: 2s;
+}
+
+.dashboard-bg span:nth-child(3) {
+  bottom: 5%;
+  left: 45%;
+  background: #22d3ee;
+  animation-delay: 4s;
+}
+
+@keyframes dashboardFloat {
+  from {
+    transform: translateY(0) translateX(0) scale(1);
+  }
+  to {
+    transform: translateY(-70px) translateX(60px) scale(1.18);
+  }
+}
