@@ -162,10 +162,13 @@ return (
           <p style={{ textAlign: 'center', marginTop: 16, fontSize: 11, color: 'var(--text-4)' }}>
             Free forever. No credit card required.
           </p>
-        )}
+    )}
         
-  )
-}
+    
+    </div>
+
+    )
+    }
 
 export const LoginPage = () => <AuthPage mode="login" />
 export const RegisterPage = () => <AuthPage mode="register" />
