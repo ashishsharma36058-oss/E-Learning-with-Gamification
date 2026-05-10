@@ -23,7 +23,8 @@ def get_current_user(request: Request, db: Session = Depends(get_db)) -> User:
         raise HTTPException(401, "User not found")
     return user
 
-@router.post("/register", response_model=UserPublic, status_code=201)
+@router.post("/register")
+async def register(request: Request, body: UserRegister, db: Session = Depends(get_db)):
 @limiter.limit("5/minute")
 async def register(request: Request, body: UserRegister, db: Session = Depends(get_db)):
     if db.query(User).filter(User.username == body.username).first():
