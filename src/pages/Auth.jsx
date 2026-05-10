@@ -60,6 +60,8 @@ return (
     </div>
 
     <div style={{
+      position: 'relative',
+      zIndex: 2,
       minHeight: '100vh',
       display: 'flex',
       alignItems: 'center',
