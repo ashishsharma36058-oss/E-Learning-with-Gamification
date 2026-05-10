@@ -12,6 +12,11 @@ export default function Landing() {
       </div>
 
       <section className="hero">
+        <div className="particle"></div>
+        <div className="particle"></div>
+        <div className="particle"></div>
+        <div className="particle"></div>
+        
         <div className="hero-content">
           <p className="badge">⚡ Learn by Playing — Not by Watching</p>
 
