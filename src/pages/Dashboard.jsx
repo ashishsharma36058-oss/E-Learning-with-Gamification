@@ -33,7 +33,7 @@ export default function Dashboard() {
   ]
 
   return (
-    <div className="container page-enter">
+    <div className="dashboard-page page-enter">
 
       <div className="dashboard-bg">
         <span></span>
