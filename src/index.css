@@ -821,28 +821,99 @@ input::placeholder, textarea::placeholder { color: var(--text-3); }
   animation: cyberLineMove 5s linear infinite;
   opacity: 0.8;
 }
+.auth-cyber-bg {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(124, 58, 237, 0.35), transparent 30%),
+    radial-gradient(circle at 80% 70%, rgba(236, 72, 153, 0.3), transparent 32%),
+    #050510;
+}
+
+.cyber-grid {
+  position: absolute;
+  inset: -60px;
+  background-image:
+    linear-gradient(rgba(168, 85, 247, 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(168, 85, 247, 0.18) 1px, transparent 1px);
+  background-size: 55px 55px;
+  transform: perspective(700px) rotateX(55deg);
+  transform-origin: bottom;
+  animation: cyberGridDrive 5s linear infinite;
+  opacity: 0.75;
+}
+
+@keyframes cyberGridDrive {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 0 55px;
+  }
+}
+
+.cyber-line {
+  position: absolute;
+  width: 160px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #a855f7, #22d3ee, transparent);
+  box-shadow: 0 0 25px #a855f7;
+  animation: cyberLaser 4s linear infinite;
+}
 
 .cyber-line:nth-child(2) {
-  left: 20%;
-  animation-delay: 0s;
+  top: 18%;
+  left: -180px;
 }
 
 .cyber-line:nth-child(3) {
-  left: 55%;
-  animation-delay: 1.5s;
+  top: 52%;
+  left: -180px;
+  animation-delay: 1.4s;
 }
 
 .cyber-line:nth-child(4) {
-  left: 80%;
-  animation-delay: 3s;
+  top: 78%;
+  left: -180px;
+  animation-delay: 2.8s;
 }
 
-@keyframes cyberLineMove {
+@keyframes cyberLaser {
   from {
-    top: -200px;
+    transform: translateX(0);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
   }
   to {
-    top: 110%;
+    transform: translateX(120vw);
+    opacity: 0;
+  }
+}
+
+.auth-cyber-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 6px,
+    rgba(255,255,255,0.025) 7px
+  );
+  animation: scanMove 2.5s linear infinite;
+}
+
+@keyframes scanMove {
+  from {
+    transform: translateY(-20px);
+  }
+  to {
+    transform: translateY(20px);
   }
 }
 
