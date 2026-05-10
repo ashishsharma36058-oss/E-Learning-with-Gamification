@@ -50,10 +50,22 @@ function AuthPage({ mode }) {
     }
   }
 
-  return (
+return (
+  <>
+    <div className="auth-cyber-bg">
+      <div className="cyber-grid"></div>
+      <div className="cyber-line"></div>
+      <div className="cyber-line"></div>
+      <div className="cyber-line"></div>
+    </div>
+
     <div style={{
-      minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      padding: 24, background: 'var(--bg-0)',
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: 24,
+      background: 'var(--bg-0)',
     }}>
       {/* Background glow */}
       <div style={{
@@ -152,7 +164,7 @@ function AuthPage({ mode }) {
           </p>
         )}
       </div>
-    </div>
+    </>
   )
 }
 
