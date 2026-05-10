@@ -54,3 +54,4 @@ GRANT ALL PRIVILEGES ON DATABASE gamify_db TO gamify;
 - Monaco editor (VS Code engine)
 - JWT authentication with refresh tokens
 - Account lockout after 5 failed attempts
+- updated
