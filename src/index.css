@@ -511,16 +511,13 @@ input::placeholder, textarea::placeholder { color: var(--text-3); }
 /* PREMIUM DASHBOARD AURORA ANIMATION */
 
 .dashboard-bg {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 0 !important;
   pointer-events: none;
   overflow: hidden;
-  background:
-    radial-gradient(circle at 20% 20%, rgba(124, 58, 237, 0.35), transparent 35%),
-    radial-gradient(circle at 80% 30%, rgba(236, 72, 153, 0.28), transparent 35%),
-    radial-gradient(circle at 50% 90%, rgba(34, 211, 238, 0.22), transparent 40%);
-  animation: auroraShift 9s ease-in-out infinite alternate;
 }
 
 .dashboard-bg::before {
@@ -621,8 +618,10 @@ input::placeholder, textarea::placeholder { color: var(--text-3); }
 }
 
 .container.page-enter {
-  position: relative;
-  z-index: 2;
+  position: relative !important;
+  z-index: 2 !important;
+  max-width: 1100px;
+  margin: 0 auto;
 }
 .landing-page {
   min-height: 100vh;
