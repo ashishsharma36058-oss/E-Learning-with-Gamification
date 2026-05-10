@@ -785,3 +785,70 @@ input::placeholder, textarea::placeholder { color: var(--text-3); }
     font-size: 12px;
   }
 }
+.auth-cyber-bg {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cyber-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(168, 85, 247, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(168, 85, 247, 0.12) 1px, transparent 1px);
+  background-size: 45px 45px;
+  animation: cyberGridMove 12s linear infinite;
+  opacity: 0.5;
+}
+
+@keyframes cyberGridMove {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(45px);
+  }
+}
+
+.cyber-line {
+  position: absolute;
+  width: 2px;
+  height: 180px;
+  background: linear-gradient(180deg, transparent, #a855f7, transparent);
+  animation: cyberLineMove 5s linear infinite;
+  opacity: 0.8;
+}
+
+.cyber-line:nth-child(2) {
+  left: 20%;
+  animation-delay: 0s;
+}
+
+.cyber-line:nth-child(3) {
+  left: 55%;
+  animation-delay: 1.5s;
+}
+
+.cyber-line:nth-child(4) {
+  left: 80%;
+  animation-delay: 3s;
+}
+
+@keyframes cyberLineMove {
+  from {
+    top: -200px;
+  }
+  to {
+    top: 110%;
+  }
+}
+
+.auth-page,
+.auth-card,
+form {
+  position: relative;
+  z-index: 2;
+}
