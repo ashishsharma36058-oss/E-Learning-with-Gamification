@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: 'https://e-learning-with-gamification-2.onrender.com/api',
+  baseURL: 'https://e-learning-with-gamification-2.onrender.com',
   timeout: 15000
 })
 
