@@ -273,17 +273,16 @@ api.get(`/challenges/${id}`).then(r => {
         </div>
       </div>
 
-     {levelUp && (
-  <LevelUpModal
-    newLevel={levelUp}
-    onClose={() => {
-      setLevelUp(null)
-      navigate('/dashboard')
-    }}
-  />
-)}
-
-</div>
-)
+      {levelUp && (
+        <LevelUpModal
+          newLevel={levelUp}
+          onClose={() => {
+            setLevelUp(null)
+            navigate('/dashboard')
+          }}
+        />
+      )}
+    </div>
+  )
 }
     
