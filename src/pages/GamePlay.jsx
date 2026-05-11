@@ -491,6 +491,6 @@ window.speechSynthesis.speak(speech)
           }}
         />
       )}
-    </div>
+    
   )
 } 
