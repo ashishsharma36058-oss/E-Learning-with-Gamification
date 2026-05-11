@@ -178,15 +178,24 @@ export default function GamePlay() {
 
       toast.success(praise)
 
-      const cheer = new Audio(cheerSound)
-      cheer.play()
-
       const speech = new SpeechSynthesisUtterance(praise)
-      speech.lang = "hi-IN"
-      speech.rate = 1
-      speech.pitch = 1.1
 
-      window.speechSynthesis.speak(speech)
+      const voices = window.speechSynthesis.getVoices()
+
+      const indianVoice =
+        voices.find(v => v.lang === "en-IN") ||
+        voices.find(v => v.lang === "hi-IN") ||
+        voices.find(v => v.name.toLowerCase().includes("india"))
+
+      if (indianVoice) {
+        speech.voice = indianVoice
+      }
+
+speech.lang = "en-IN"
+speech.rate = 0.92
+speech.pitch = 1
+
+window.speechSynthesis.speak(speech)
     } finally {
       setSubmitting(false)
     }
