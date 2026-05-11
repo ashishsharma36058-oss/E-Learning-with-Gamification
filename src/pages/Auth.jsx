@@ -148,6 +148,8 @@ return (
               </label>
               <input
                 type={showPassword ? 'text' : 'password'}
+                value={form.password}
+                onChange={update('password')}
                 onKeyDown={e => e.key === 'Enter' && submit()}
                 placeholder="Enter your password"
                 autoComplete={isLogin ? 'current-password' : 'new-password'}
