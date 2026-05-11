@@ -1645,7 +1645,7 @@ const demoChallenges = [
 useEffect(() => {
   Promise.all([api.get('/challenges/'), api.get('/progress/my-challenges')])
     .then(([c, p]) => {
-      setChallenges(c.data?.length ? c.data : demoChallenges)
+      ssetChallenges(demoChallenges)
       setProgress(p.data || [])
     })
     .catch(() => {
