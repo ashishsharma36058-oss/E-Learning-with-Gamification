@@ -25,11 +25,22 @@ export default function ProfileModal({ open, onClose }) {
       username: form.username,
       email: form.email,
     })
+
     setEditMode(false)
+  }
+
+  const logout = () => {
+    localStorage.removeItem("g_access")
+    localStorage.removeItem("g_refresh")
+    localStorage.removeItem("saved_username")
+    localStorage.removeItem("saved_password")
+
+    window.location.href = "/login"
   }
 
   return (
     <>
+      {/* Overlay */}
       <div
         onClick={onClose}
         style={{
@@ -40,9 +51,11 @@ export default function ProfileModal({ open, onClose }) {
           pointerEvents: open ? "auto" : "none",
           transition: "0.3s ease",
           zIndex: 9998,
+          backdropFilter: "blur(4px)",
         }}
       />
 
+      {/* Sidebar */}
       <div
         style={{
           position: "fixed",
@@ -62,6 +75,7 @@ export default function ProfileModal({ open, onClose }) {
           overflowY: "auto",
         }}
       >
+        {/* Close */}
         <button
           onClick={onClose}
           style={{
@@ -76,6 +90,7 @@ export default function ProfileModal({ open, onClose }) {
           ×
         </button>
 
+        {/* Profile */}
         <div style={{ textAlign: "center", marginTop: 35 }}>
           <div
             style={{
@@ -117,6 +132,7 @@ export default function ProfileModal({ open, onClose }) {
           ) : (
             <>
               <h2>{user?.username || "User"}</h2>
+
               <p style={{ color: "#9ca3af" }}>
                 {user?.email || "No email"}
               </p>
@@ -124,6 +140,7 @@ export default function ProfileModal({ open, onClose }) {
           )}
         </div>
 
+        {/* Stats */}
         <div style={{ marginTop: 28, display: "grid", gap: 14 }}>
           <div style={boxStyle}>
             <h3>⚡ XP</h3>
@@ -141,6 +158,7 @@ export default function ProfileModal({ open, onClose }) {
           </div>
         </div>
 
+        {/* Edit Button */}
         <button
           onClick={editMode ? saveProfile : () => setEditMode(true)}
           style={{
@@ -158,6 +176,25 @@ export default function ProfileModal({ open, onClose }) {
           {editMode ? "Save Profile" : "✏️ Edit Profile"}
         </button>
 
+        {/* Logout Button */}
+        <button
+          onClick={logout}
+          style={{
+            marginTop: 12,
+            width: "100%",
+            padding: "14px",
+            borderRadius: 14,
+            border: "none",
+            background: "#ef4444",
+            color: "white",
+            fontWeight: "bold",
+            cursor: "pointer",
+          }}
+        >
+          Logout
+        </button>
+
+        {/* Close Button */}
         <button
           onClick={onClose}
           style={{
