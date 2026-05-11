@@ -11,6 +11,7 @@ function AuthPage({ mode }) {
   const [form, setForm] = useState({ username: '', email: '', password: '' })
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState({})
+  const [showPassword, setShowPassword] = useState(false)
 
   const update = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }))
 
@@ -134,12 +135,23 @@ return (
                 PASSWORD
               </label>
               <input
-                type="password" value={form.password} onChange={update('password')}
+                type={showPassword ? 'text' : 'password'}
                 onKeyDown={e => e.key === 'Enter' && submit()}
                 placeholder={isLogin ? '••••••••' : 'Min 8 chars · 1 uppercase · 1 number'}
                 autoComplete={isLogin ? 'current-password' : 'new-password'}
                 style={errors.password ? { borderColor: 'var(--red)' } : {}}
               />
+              <div style={{ marginTop: 8 }}>
+                <label style={{ cursor: 'pointer', fontSize: 14, color: 'white' }}>
+                  <input
+                    type="checkbox"
+                    checked={showPassword}
+                    onChange={() => setShowPassword(!showPassword)}
+                    style={{ marginRight: 6 }}
+                  />
+                  Show Password
+                </label>
+              </div>
               {errors.password && <div style={{ fontSize: 11, color: 'var(--red)', marginTop: 5 }}>{errors.password}</div>}
             </div>
 
