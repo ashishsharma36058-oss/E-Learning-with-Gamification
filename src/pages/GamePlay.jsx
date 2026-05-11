@@ -174,7 +174,16 @@ export default function GamePlay() {
       setXpFloat(`+${ch.xp_reward} XP`)
       setTimeout(() => setXpFloat(null), 2500)
 
-      toast.success(`Excellent work! 🎉 Tumne challenge complete kar liya!`)
+      const praise = "Excellent work! Tumne challenge complete kar liya. Keep going, future coder!"
+
+      toast.success(praise)
+
+      const speech = new SpeechSynthesisUtterance(praise)
+      speech.lang = "en-US"
+      speech.rate = 1
+      speech.pitch = 1.1
+
+      window.speechSynthesis.speak(speech)
     } finally {
       setSubmitting(false)
     }
