@@ -12,7 +12,7 @@ export default function ChallengeCard({ challenge, completed, userLevel }) {
   return (
     <div
       className={`challenge-card ${challenge.difficulty} ${locked ? 'locked' : ''}`}
-      onClick={() => !locked && navigate(`/play/${challenge.id}`)}
+      onClick={() => !locked && navigate(`/play/${challenge.id}`, { state: { challenge } })}
     >
       {/* Icon */}
       <div style={{
