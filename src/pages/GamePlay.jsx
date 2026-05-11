@@ -194,12 +194,13 @@ export default function GamePlay() {
 speech.lang = "en-IN"
 speech.rate = 0.92
 speech.pitch = 1
+speech.volume = 1
 
-window.speechSynthesis.speak(speech)
-    } finally {
-      setSubmitting(false)
-    }
-  }
+window.speechSynthesis.cancel()
+
+setTimeout(() => {
+  window.speechSynthesis.speak(speech)
+}, 300)
 
   if (!ch) {
     return (
