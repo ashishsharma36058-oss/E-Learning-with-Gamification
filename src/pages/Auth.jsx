@@ -30,7 +30,10 @@ function AuthPage({ mode }) {
     setLoading(true)
     try {
       if (isLogin) {
-        const { data } = await api.post('/auth/login', { username: form.username, password: form.password })
+        const { data } = await api.post('/auth/login', {
+          username: form.username.trim(),
+          password: form.password.trim()
+        })
         localStorage.setItem('g_access', data.access_token)
         localStorage.setItem('g_refresh', data.refresh_token)
         const { data: me } = await api.get('/progress/me')
@@ -38,11 +41,15 @@ function AuthPage({ mode }) {
         toast.success(`Welcome back, ${me.username}!`)
         navigate('/dashboard')
       } else {
-        await api.post('/auth/register', form)
+        await api.post('/auth/register', {
+          username: form.username.trim(),
+          email: form.email.trim(),
+          password: form.password.trim()
+        })
 
         const { data } = await api.post('/auth/login', {
-          username: form.username,
-          password: form.password
+          username: form.username.trim(),
+          password: form.password.trim()
         })
 
         localStorage.setItem('g_access', data.access_token)
