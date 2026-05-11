@@ -35,7 +35,14 @@ export default function Play() {
   }, [])
 
   const completedIds = new Set(progress.filter(p => p.completed).map(p => p.challenge_id))
-  const filtered = challenges.filter(c => (lang === 'all' || c.language === lang) && (diff === 'all' || c.difficulty === diff))
+  const normalize = (v) => String(v || '').toLowerCase().split('.').pop()
+
+const filtered = challenges.filter(c => {
+  const cLang = normalize(c.language)
+  const cDiff = normalize(c.difficulty)
+
+  return (lang === 'all' || cLang === lang) && (diff === 'all' || cDiff === diff)
+})
 
   const FilterBtn = ({ val, label, active, onClick }) => (
     <button onClick={onClick} style={{
