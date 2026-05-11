@@ -40,6 +40,30 @@ export default function GamePlay() {
   const startTime = useRef(Date.now())
   const timerRef = useRef(null)
 
+  const speakPraise = () => {
+    const praise = "Excellent work! Tumne challenge complete kar liya. Keep going, future coder!"
+
+    toast.success(praise)
+
+    const speech = new SpeechSynthesisUtterance(praise)
+    const voices = window.speechSynthesis.getVoices()
+
+    const indianVoice =
+      voices.find(v => v.lang === 'en-IN') ||
+      voices.find(v => v.lang === 'hi-IN') ||
+      voices.find(v => v.name.toLowerCase().includes('india'))
+
+    if (indianVoice) speech.voice = indianVoice
+
+    speech.lang = 'en-IN'
+    speech.rate = 0.92
+    speech.pitch = 1
+    speech.volume = 1
+
+    window.speechSynthesis.cancel()
+    window.speechSynthesis.speak(speech)
+  }
+
   useEffect(() => {
     const savedChallenge = JSON.parse(localStorage.getItem('current_challenge') || 'null')
     const demoChallenge = location.state?.challenge || savedChallenge
@@ -125,7 +149,6 @@ export default function GamePlay() {
 
   const showHint = () => {
     const hints = ch?.hints || []
-
     if (!ch || hintsUsed >= hints.length) return
 
     toast(`💡 Hint: ${hints[hintsUsed]}`)
@@ -155,11 +178,10 @@ export default function GamePlay() {
         setTimeout(() => setXpFloat(null), 2500)
 
         addXP(data.xp_earned, data.level_up ? data.new_level : null)
+        speakPraise()
 
         if (data.level_up) {
           setTimeout(() => setLevelUp(data.new_level), 600)
-        } else {
-          toast.success(`Great job! 🎉 +${data.xp_earned} XP earned`)
         }
       } else {
         toast.error(data.message || 'Try again')
@@ -174,30 +196,12 @@ export default function GamePlay() {
       setXpFloat(`+${ch.xp_reward} XP`)
       setTimeout(() => setXpFloat(null), 2500)
 
-      const praise = "Excellent work! Tumne challenge complete kar liya. Keep going, future coder!"
-
-toast.success(praise)
-
-const speech = new SpeechSynthesisUtterance(praise)
-const voices = window.speechSynthesis.getVoices()
-
-const indianVoice =
-  voices.find(v => v.lang === "en-IN") ||
-  voices.find(v => v.lang === "hi-IN") ||
-  voices.find(v => v.name.toLowerCase().includes("india"))
-
-if (indianVoice) {
-  speech.voice = indianVoice
-}
-
-speech.lang = "en-IN"
-speech.rate = 0.92
-speech.pitch = 1
-speech.volume = 1
-
-window.speechSynthesis.cancel()
-window.speechSynthesis.speak(speech)
-
+      addXP(ch.xp_reward, null)
+      speakPraise()
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   if (!ch) {
     return (
@@ -429,7 +433,11 @@ window.speechSynthesis.speak(speech)
                 )}
 
                 {hintsUsed > 0 && hintsUsed < hints.length && (
-                  <button className="btn btn-secondary btn-sm" style={{ marginTop: 8, width: '100%' }} onClick={showHint}>
+                  <button
+                    className="btn btn-secondary btn-sm"
+                    style={{ marginTop: 8, width: '100%' }}
+                    onClick={showHint}
+                  >
                     Reveal Hint {hintsUsed + 1}
                   </button>
                 )}
@@ -482,8 +490,8 @@ window.speechSynthesis.speak(speech)
         </div>
       </div>
 
-           {levelUp && (
-             <LevelUpModal
+      {levelUp && (
+        <LevelUpModal
           newLevel={levelUp}
           onClose={() => {
             setLevelUp(null)
@@ -491,6 +499,6 @@ window.speechSynthesis.speak(speech)
           }}
         />
       )}
-    
+    </div>
   )
-} 
+}
