@@ -65,11 +65,9 @@ const speakPraise = () => {
     window.speechSynthesis.speak(speech)
   }
 
-  if (window.speechSynthesis.getVoices().length === 0) {
-    window.speechSynthesis.onvoiceschanged = speakNow
-  } else {
-    speakNow()
-  }
+  setTimeout(() => {
+  speakNow()
+}, 200)
 }
 
   useEffect(() => {
