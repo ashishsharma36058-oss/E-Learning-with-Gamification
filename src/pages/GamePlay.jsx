@@ -176,20 +176,19 @@ export default function GamePlay() {
 
       const praise = "Excellent work! Tumne challenge complete kar liya. Keep going, future coder!"
 
-      toast.success(praise)
+toast.success(praise)
 
-      const speech = new SpeechSynthesisUtterance(praise)
+const speech = new SpeechSynthesisUtterance(praise)
+const voices = window.speechSynthesis.getVoices()
 
-      const voices = window.speechSynthesis.getVoices()
+const indianVoice =
+  voices.find(v => v.lang === "en-IN") ||
+  voices.find(v => v.lang === "hi-IN") ||
+  voices.find(v => v.name.toLowerCase().includes("india"))
 
-      const indianVoice =
-        voices.find(v => v.lang === "en-IN") ||
-        voices.find(v => v.lang === "hi-IN") ||
-        voices.find(v => v.name.toLowerCase().includes("india"))
-
-      if (indianVoice) {
-        speech.voice = indianVoice
-      }
+if (indianVoice) {
+  speech.voice = indianVoice
+}
 
 speech.lang = "en-IN"
 speech.rate = 0.92
@@ -197,10 +196,8 @@ speech.pitch = 1
 speech.volume = 1
 
 window.speechSynthesis.cancel()
+window.speechSynthesis.speak(speech)
 
-setTimeout(() => {
-  window.speechSynthesis.speak(speech)
-}, 300)
 
   if (!ch) {
     return (
