@@ -72,7 +72,7 @@ export default function Navbar() {
                 <div className="xp-bar-fill" style={{ width: `${pct}%` }} />
               </div>
             </div>
-            <button onClick={handleLogout} title="Logout" style={{
+            <button onClick={() => navigate('/dashboard')} title="Profile" style={{
               width: 36, height: 36, borderRadius: '50%',
               background: 'linear-gradient(135deg, var(--purple), var(--orange))',
               border: 'none', cursor: 'pointer',
