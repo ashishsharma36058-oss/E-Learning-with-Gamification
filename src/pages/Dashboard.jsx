@@ -87,7 +87,10 @@ export default function Dashboard() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit,minmax(250px,1fr))",
+            gridTemplateColumns:
+  window.innerWidth < 768
+    ? "1fr"
+    : "repeat(auto-fit,minmax(250px,1fr))",
             gap: "25px",
           }}
         >
@@ -105,7 +108,7 @@ export default function Dashboard() {
             >
               <div
                 style={{
-                  fontSize: "45px",
+                  fontSize: window.innerWidth < 768 ? "32px" : "45px",
                   marginBottom: "15px",
                 }}
               >
@@ -137,7 +140,7 @@ export default function Dashboard() {
           style={{
             marginTop: "50px",
             background: "#111827",
-            padding: "30px",
+            padding: window.innerWidth < 768 ? "20px" : "30px",
             borderRadius: "20px",
           }}
         >
