@@ -1,7 +1,32 @@
+import { useState, useEffect } from "react"
 import useStore from "../store/useStore"
 
 export default function ProfileModal({ open, onClose }) {
-  const { user } = useStore()
+  const { user, setUser } = useStore()
+
+  const [editMode, setEditMode] = useState(false)
+  const [form, setForm] = useState({
+    username: "",
+    email: "",
+  })
+
+  useEffect(() => {
+    if (user) {
+      setForm({
+        username: user.username || "",
+        email: user.email || "",
+      })
+    }
+  }, [user])
+
+  const saveProfile = () => {
+    setUser({
+      ...user,
+      username: form.username,
+      email: form.email,
+    })
+    setEditMode(false)
+  }
 
   return (
     <>
@@ -66,11 +91,37 @@ export default function ProfileModal({ open, onClose }) {
               margin: "0 auto 18px",
             }}
           >
-            {user?.username?.[0]?.toUpperCase() || "U"}
+            {form.username?.[0]?.toUpperCase() || "U"}
           </div>
 
-          <h2>{user?.username || "User"}</h2>
-          <p style={{ color: "#9ca3af" }}>{user?.email || "No email"}</p>
+          {editMode ? (
+            <div style={{ display: "grid", gap: 12 }}>
+              <input
+                value={form.username}
+                onChange={(e) =>
+                  setForm({ ...form, username: e.target.value })
+                }
+                placeholder="Username"
+                style={inputStyle}
+              />
+
+              <input
+                value={form.email}
+                onChange={(e) =>
+                  setForm({ ...form, email: e.target.value })
+                }
+                placeholder="Email"
+                style={inputStyle}
+              />
+            </div>
+          ) : (
+            <>
+              <h2>{user?.username || "User"}</h2>
+              <p style={{ color: "#9ca3af" }}>
+                {user?.email || "No email"}
+              </p>
+            </>
+          )}
         </div>
 
         <div style={{ marginTop: 28, display: "grid", gap: 14 }}>
@@ -91,9 +142,26 @@ export default function ProfileModal({ open, onClose }) {
         </div>
 
         <button
-          onClick={onClose}
+          onClick={editMode ? saveProfile : () => setEditMode(true)}
           style={{
             marginTop: 28,
+            width: "100%",
+            padding: "14px",
+            borderRadius: 14,
+            border: "none",
+            background: editMode ? "#10b981" : "#f59e0b",
+            color: "white",
+            fontWeight: "bold",
+            cursor: "pointer",
+          }}
+        >
+          {editMode ? "Save Profile" : "✏️ Edit Profile"}
+        </button>
+
+        <button
+          onClick={onClose}
+          style={{
+            marginTop: 12,
             width: "100%",
             padding: "14px",
             borderRadius: 14,
@@ -116,4 +184,14 @@ const boxStyle = {
   padding: 16,
   borderRadius: 14,
   border: "1px solid rgba(124,58,237,0.25)",
+}
+
+const inputStyle = {
+  width: "100%",
+  padding: "12px",
+  borderRadius: 12,
+  border: "1px solid rgba(124,58,237,0.4)",
+  background: "#0f172a",
+  color: "white",
+  outline: "none",
 }
