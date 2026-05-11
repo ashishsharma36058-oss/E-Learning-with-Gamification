@@ -120,8 +120,12 @@ api.get(`/challenges/${id}`).then(r => {
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ fontSize: 15, fontWeight: 700 }}>{ch.title}</span>
-            <span className={`pill pill-${ch.difficulty}`}>{ch.difficulty}</span>
-            <span className="mode-badge">{MODE_ICONS[ch.game_mode]} {ch.game_mode}</span>
+            <span className={`pill pill-${ch?.difficulty || 'easy'}`}>
+              {ch?.difficulty || 'easy'}
+            </span>
+            <span className="mode-badge">
+              {MODE_ICONS[ch?.game_mode] || '🎮'} {ch?.game_mode || 'play'}
+            </span>
           </div>
           <div style={{ fontSize: 11, color: 'var(--text-3)', fontFamily: 'var(--mono)', marginTop: 2 }}>
             {ch.language} · +{ch.xp_reward} XP base reward
@@ -242,7 +246,7 @@ api.get(`/challenges/${id}`).then(r => {
         <div style={{ flex: 1, position: 'relative' }}>
           <Editor
             height="100%"
-            language={LANG_MAP[ch.language]}
+            language={LANG_MAP[ch?.language] || 'javascript'}
             value={code}
             onChange={val => setCode(val || '')}
             theme="vs-dark"
