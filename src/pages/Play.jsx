@@ -22,17 +22,52 @@ const DIFF_FILTERS = [
 export default function Play() {
   const { user } = useStore()
   const [challenges, setChallenges] = useState([])
+  const demoChallenges = [
+  {
+    id: 1,
+    title: "Hello World",
+    description: "Write a function that returns Hello, World!",
+    difficulty: "easy",
+    language: "python",
+    xp_reward: 100,
+    game_mode: "puzzle"
+  },
+  {
+    id: 2,
+    title: "Sum of Two Numbers",
+    description: "Return the sum of two numbers.",
+    difficulty: "easy",
+    language: "python",
+    xp_reward: 100,
+    game_mode: "puzzle"
+  },
+  {
+    id: 3,
+    title: "Even Number Check",
+    description: "Return true if number is even.",
+    difficulty: "medium",
+    language: "python",
+    xp_reward: 200,
+    game_mode: "puzzle"
+  }
+]
   const [progress, setProgress] = useState([])
   const [lang, setLang] = useState('all')
   const [diff, setDiff] = useState('all')
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    Promise.all([api.get('/challenges/'), api.get('/progress/my-challenges')])
-      .then(([c, p]) => { setChallenges(c.data); setProgress(p.data) })
-      .catch(() => {})
-      .finally(() => setLoading(false))
-  }, [])
+useEffect(() => {
+  Promise.all([api.get('/challenges/'), api.get('/progress/my-challenges')])
+    .then(([c, p]) => {
+      setChallenges(c.data?.length ? c.data : demoChallenges)
+      setProgress(p.data || [])
+    })
+    .catch(() => {
+      setChallenges(demoChallenges)
+      setProgress([])
+    })
+    .finally(() => setLoading(false))
+}, [])
 
   const completedIds = new Set(progress.filter(p => p.completed).map(p => p.challenge_id))
   const normalize = (v) => String(v || '').toLowerCase().split('.').pop()
