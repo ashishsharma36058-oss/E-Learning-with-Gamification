@@ -1,133 +1,207 @@
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import api from '../api/client'
-import useStore from '../store/useStore'
-
-const LANG_TRACKS = [
-  { key: 'python', name: 'Python', icon: '🐍', color: '#38bdf8' },
-  { key: 'javascript', name: 'JavaScript', icon: '⚡', color: '#f59e0b' },
-  { key: 'cpp', name: 'C++', icon: '⚙️', color: '#a78bfa' },
-  { key: 'java', name: 'Java', icon: '☕', color: '#fb7185' },
-]
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import api from "../api/client"
+import useStore from "../store/useStore"
 
 export default function Dashboard() {
   const navigate = useNavigate()
   const { user, setUser } = useStore()
-  const [stats, setStats] = useState(null)
+
+  const [stats, setStats] = useState({
+    completed: 0,
+    accuracy: 0,
+  })
+
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    api.get('/progress/me')
+    api
+      .get("/progress/me")
       .then(({ data }) => {
         setStats(data)
-        if (data.user) setUser(data.user)
+
+        if (data.user) {
+          setUser(data.user)
+        }
       })
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [])
 
-  if (!user) return null
-
-  const statCards = [
-    { label: 'Challenges Solved', value: loading ? '-' : (stats?.completed ?? 0), sub: 'total completed' },
-    { label: 'Accuracy Rate', value: loading ? '-' : `${stats?.accuracy ?? 0}%`, sub: 'correct submissions' },
-    { label: 'Total XP Earned', value: user.total_xp || 0, sub: 'all time' },
-    { label: 'Current Streak', value: `${user.streak_days || 0}d`, sub: 'Keep going!' },
+  const cards = [
+    {
+      title: "Challenges Solved",
+      value: stats.completed || 0,
+      emoji: "🏆",
+      color: "#8b5cf6",
+    },
+    {
+      title: "Accuracy",
+      value: `${stats.accuracy || 0}%`,
+      emoji: "🎯",
+      color: "#06b6d4",
+    },
+    {
+      title: "Total XP",
+      value: user?.total_xp || 0,
+      emoji: "⚡",
+      color: "#f59e0b",
+    },
   ]
 
   return (
-    <>
-      <div className="dashboard-bg">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
+    <div
+      style={{
+        minHeight: "100vh",
+        background:
+          "linear-gradient(to right, #0f172a, #111827, #1e293b)",
+        color: "white",
+        padding: "40px",
+        fontFamily: "sans-serif",
+      }}
+    >
+      <div
+        style={{
+          animation: "fadeIn 1s ease",
+        }}
+      >
+        <h1
+          style={{
+            fontSize: "42px",
+            marginBottom: "10px",
+            fontWeight: "bold",
+          }}
+        >
+          🚀 Gamify Dashboard
+        </h1>
 
-      <div className="dashboard-page page-enter">
-        <div style={{ marginBottom: 28 }}>
-          <h1 style={{ marginBottom: 6 }}>
-            Welcome back, <span style={{ color: 'var(--purple-light)' }}>{user.username}</span> 👋
-          </h1>
-          <p style={{ fontSize: 13, color: 'var(--text-3)', fontFamily: 'var(--mono)' }}>
-            // {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
-          </p>
-        </div>
+        <p
+          style={{
+            color: "#94a3b8",
+            marginBottom: "40px",
+          }}
+        >
+          Welcome back {user?.username || "Coder"} 👋
+        </p>
 
-        <div className="card" style={{ marginBottom: 26 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
-            <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-              <div className="badge">LVL {user.level || 1}</div>
-              <span style={{ color: 'var(--text-2)' }}>Beginner</span>
-            </div>
-            <div style={{ color: 'var(--orange)', fontFamily: 'var(--mono)' }}>
-              {user.total_xp || 0} / 300 XP
-            </div>
-          </div>
-
-          <div className="xpbar">
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit,minmax(250px,1fr))",
+            gap: "25px",
+          }}
+        >
+          {cards.map((card, index) => (
             <div
-              className="xpbar-fill"
-              style={{ width: `${Math.min(((user.total_xp || 0) / 300) * 100, 100)}%` }}
-            />
-          </div>
-
-          <div style={{ marginTop: 10, textAlign: 'right', fontSize: 12, color: 'var(--text-3)', fontFamily: 'var(--mono)' }}>
-            300 XP to Level {(user.level || 1) + 1}
-          </div>
-        </div>
-
-        <div className="grid grid-4" style={{ marginBottom: 28 }}>
-          {statCards.map((s) => (
-            <div key={s.label} className="card">
-              <div className="label">{s.label}</div>
-              <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--purple-light)', marginBottom: 6 }}>
-                {s.value}
+              key={index}
+              style={{
+                background: "#1e293b",
+                borderRadius: "20px",
+                padding: "30px",
+                transition: "0.3s",
+                border: `2px solid ${card.color}`,
+                boxShadow: `0 0 20px ${card.color}33`,
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "45px",
+                  marginBottom: "15px",
+                }}
+              >
+                {card.emoji}
               </div>
-              <div style={{ fontSize: 13, color: 'var(--text-3)' }}>{s.sub}</div>
+
+              <h2
+                style={{
+                  fontSize: "18px",
+                  color: "#cbd5e1",
+                }}
+              >
+                {card.title}
+              </h2>
+
+              <h1
+                style={{
+                  fontSize: "38px",
+                  marginTop: "10px",
+                }}
+              >
+                {loading ? "..." : card.value}
+              </h1>
             </div>
           ))}
         </div>
 
-        <div style={{ marginBottom: 28 }}>
-          <div className="section-title">Language Tracks</div>
+        <div
+          style={{
+            marginTop: "50px",
+            background: "#111827",
+            padding: "30px",
+            borderRadius: "20px",
+          }}
+        >
+          <h2
+            style={{
+              marginBottom: "20px",
+              fontSize: "28px",
+            }}
+          >
+            🎮 Quick Actions
+          </h2>
 
-          <div className="grid grid-4">
-            {LANG_TRACKS.map((lang) => {
-              const data = stats?.lang_stats?.[lang.key]
-              const done = data?.completed || 0
-              const total = data?.total || 0
+          <div
+            style={{
+              display: "flex",
+              gap: "20px",
+              flexWrap: "wrap",
+            }}
+          >
+            <button
+              onClick={() => navigate("/play")}
+              style={buttonStyle}
+            >
+              Play Game
+            </button>
 
-              return (
-                <div key={lang.key} className="card" style={{ padding: 18, textAlign: 'center', cursor: 'pointer' }}>
-                  <div style={{ fontSize: 28, marginBottom: 8 }}>{lang.icon}</div>
-                  <div style={{ fontWeight: 700, fontSize: 13, color: lang.color, marginBottom: 4 }}>
-                    {lang.name}
-                  </div>
-                  <div style={{ fontSize: 10, color: 'var(--text-3)', fontFamily: 'var(--mono)', marginBottom: 10 }}>
-                    {done} / {total} solved
-                  </div>
-                  <div className="xpbar">
-                    <div
-                      className="xpbar-fill"
-                      style={{ width: `${total ? (done / total) * 100 : 0}%` }}
-                    />
-                  </div>
-                </div>
-              )
-            })}
+            <button
+              onClick={() => navigate("/leaderboard")}
+              style={buttonStyle}
+            >
+              Leaderboard
+            </button>
           </div>
         </div>
-
-        <div className="grid grid-2">
-          <button className="btn btn-primary" onClick={() => navigate('/play')}>
-            ▶ Play Now
-          </button>
-
-          <button className="btn" onClick={() => navigate('/leaderboard')}>
-            🏆 View Rankings
-          </button>
-        </div>
       </div>
-    </>
+
+      <style>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        button:hover {
+          transform: scale(1.05);
+        }
+      `}</style>
+    </div>
   )
+}
+
+const buttonStyle = {
+  padding: "15px 25px",
+  border: "none",
+  borderRadius: "12px",
+  background: "#8b5cf6",
+  color: "white",
+  fontSize: "16px",
+  cursor: "pointer",
+  transition: "0.3s",
 }
