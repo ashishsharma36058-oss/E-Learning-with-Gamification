@@ -45,32 +45,30 @@ const speakPraise = () => {
 
   toast.success(praise)
 
-  const speakNow = () => {
-    const speech = new SpeechSynthesisUtterance(praise)
-    const voices = window.speechSynthesis.getVoices()
+  if (!window.speechSynthesis) return
 
-    const indianVoice =
-      voices.find(v => v.lang === 'en-IN') ||
-      voices.find(v => v.lang === 'hi-IN') ||
-      voices.find(v => v.name.toLowerCase().includes('india'))
+  window.speechSynthesis.cancel()
 
-    if (indianVoice) speech.voice = indianVoice
+  const speech = new SpeechSynthesisUtterance(praise)
 
-    speech.lang = 'en-IN'
-    speech.rate = 0.92
-    speech.pitch = 1
-    speech.volume = 1
+  speech.lang = 'en-IN'
+  speech.rate = 0.9
+  speech.pitch = 1
+  speech.volume = 1
 
-    window.speechSynthesis.cancel()
+  const voices = window.speechSynthesis.getVoices()
 
-setTimeout(() => {
-  window.speechSynthesis.speak(speech)
-}, 500)
-  }  
+  const indianVoice =
+    voices.find(v => v.lang === 'hi-IN') ||
+    voices.find(v => v.lang === 'en-IN')
+
+  if (indianVoice) {
+    speech.voice = indianVoice
+  }
 
   setTimeout(() => {
-  speakNow()
-}, 200)
+    window.speechSynthesis.speak(speech)
+  }, 800)
 }
 
   useEffect(() => {
