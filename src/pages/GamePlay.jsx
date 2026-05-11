@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import Editor from '@monaco-editor/react'
 import toast from 'react-hot-toast'
 import api from '../api/client'
@@ -12,6 +12,7 @@ const LANG_MAP = { python: 'python', javascript: 'javascript', cpp: 'cpp', java:
 export default function GamePlay() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const { addXP } = useStore()
   const [ch, setCh] = useState(null)
   const [code, setCode] = useState('')
@@ -26,14 +27,24 @@ export default function GamePlay() {
   const startTime = useRef(Date.now())
   const timerRef = useRef(null)
 
-  useEffect(() => {
-    api.get(`/challenges/${id}`).then(r => {
-      setCh(r.data)
-      setCode(r.data.starter_code)
-      setTimeLeft(r.data.time_limit)
-      startTime.current = Date.now()
-    }).catch(() => navigate('/play'))
-  }, [id])
+useEffect(() => {
+  const demoChallenge = location.state?.challenge
+
+  if (demoChallenge) {
+    setCh(demoChallenge)
+    setCode(demoChallenge.starter_code || "")
+    setTimeLeft(demoChallenge.time_limit || 120)
+    startTime.current = Date.now()
+    return
+  }
+
+  api.get(`/challenges/${id}`).then(r => {
+    setCh(r.data)
+    setCode(r.data.starter_code || "")
+    setTimeLeft(r.data.time_limit || 120)
+    startTime.current = Date.now()
+  }).catch(() => navigate('/play'))
+}, [id])
 
   useEffect(() => {
     if (!ch) return
