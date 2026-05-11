@@ -40,11 +40,12 @@ export default function GamePlay() {
   const startTime = useRef(Date.now())
   const timerRef = useRef(null)
 
-  const speakPraise = () => {
-    const praise = "Excellent work! Tumne challenge complete kar liya. Keep going, future coder!"
+const speakPraise = () => {
+  const praise = "Excellent work! Tumne challenge complete kar liya. Keep going, future coder!"
 
-    toast.success(praise)
+  toast.success(praise)
 
+  const speakNow = () => {
     const speech = new SpeechSynthesisUtterance(praise)
     const voices = window.speechSynthesis.getVoices()
 
@@ -63,6 +64,13 @@ export default function GamePlay() {
     window.speechSynthesis.cancel()
     window.speechSynthesis.speak(speech)
   }
+
+  if (window.speechSynthesis.getVoices().length === 0) {
+    window.speechSynthesis.onvoiceschanged = speakNow
+  } else {
+    speakNow()
+  }
+}
 
   useEffect(() => {
     const savedChallenge = JSON.parse(localStorage.getItem('current_challenge') || 'null')
