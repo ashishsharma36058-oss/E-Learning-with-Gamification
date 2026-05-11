@@ -22,8 +22,11 @@ app.include_router(leaderboard.router, prefix="/api")
 
 @app.on_event("startup")
 async def startup():
+    Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
-    print("Gamify v2.0 — Server started")
+
+    print("Gamify v2.0 - Server started")
+
     seed()
 
 @app.get("/")
