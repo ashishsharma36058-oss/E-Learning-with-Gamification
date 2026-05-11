@@ -50,6 +50,7 @@ api.get(`/challenges/${id}`).then(r => {
   startTime.current = Date.now()
 
 }).catch(() => navigate('/play'))
+}, [id])
 
   useEffect(() => {
     if (!ch) return
