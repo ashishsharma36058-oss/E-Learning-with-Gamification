@@ -234,8 +234,8 @@ def seed():
     try:
         existing = db.query(Challenge).count()
         if existing > 0:
-            print(f"Database already has {existing} challenges. Drop and recreate to reseed.")
-            return
+            db.query(Challenge).delete()
+            db.commit()
         for data in CHALLENGES:
             ch = Challenge(**data)
             db.add(ch)
