@@ -1,3 +1,4 @@
+import ProfileModal from "../components/ProfileModal"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import api from "../api/client"
@@ -13,6 +14,7 @@ export default function Dashboard() {
   })
 
   const [loading, setLoading] = useState(true)
+  const [openProfile, setOpenProfile] = useState(false)
 
   useEffect(() => {
     api
@@ -82,6 +84,21 @@ export default function Dashboard() {
           }}
         >
           Welcome back {user?.username || "Coder"} 👋
+          <button
+  onClick={() => setOpenProfile(true)}
+  style={{
+    marginTop: "15px",
+    padding: "10px 16px",
+    borderRadius: 12,
+    border: "none",
+    background: "#7c3aed",
+    color: "white",
+    fontWeight: "bold",
+    cursor: "pointer"
+  }}
+>
+  👤 Profile
+</button>
         </p>
 
         <div
@@ -194,6 +211,10 @@ export default function Dashboard() {
           transform: scale(1.05);
         }
       `}</style>
+      <ProfileModal
+  open={openProfile}
+  onClose={() => setOpenProfile(false)}
+/>
     </div>
   )
 }
