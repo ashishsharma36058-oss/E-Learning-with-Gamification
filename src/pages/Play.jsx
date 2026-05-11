@@ -22,33 +22,413 @@ const DIFF_FILTERS = [
 export default function Play() {
   const { user } = useStore()
   const [challenges, setChallenges] = useState([])
-  const demoChallenges = [
+const demoChallenges = [
+  // PYTHON
   {
     id: 1,
     title: "Hello World",
-    description: "Write a function that returns Hello, World!",
+    description: "Return Hello World",
     difficulty: "easy",
     language: "python",
     xp_reward: 100,
-    game_mode: "puzzle"
+    game_mode: "puzzle",
+    level_req: 1
   },
   {
     id: 2,
-    title: "Sum of Two Numbers",
-    description: "Return the sum of two numbers.",
+    title: "Sum Two Numbers",
+    description: "Return sum of two numbers",
     difficulty: "easy",
     language: "python",
     xp_reward: 100,
-    game_mode: "puzzle"
+    game_mode: "puzzle",
+    level_req: 1
   },
   {
     id: 3,
-    title: "Even Number Check",
-    description: "Return true if number is even.",
+    title: "Even Number",
+    description: "Check even number",
+    difficulty: "easy",
+    language: "python",
+    xp_reward: 120,
+    game_mode: "puzzle",
+    level_req: 1
+  },
+  {
+    id: 4,
+    title: "Palindrome",
+    description: "Check palindrome string",
     difficulty: "medium",
     language: "python",
     xp_reward: 200,
-    game_mode: "puzzle"
+    game_mode: "battle",
+    level_req: 1
+  },
+  {
+    id: 5,
+    title: "Factorial",
+    description: "Find factorial",
+    difficulty: "medium",
+    language: "python",
+    xp_reward: 220,
+    game_mode: "battle",
+    level_req: 1
+  },
+  {
+    id: 6,
+    title: "Prime Number",
+    description: "Check prime number",
+    difficulty: "medium",
+    language: "python",
+    xp_reward: 240,
+    game_mode: "battle",
+    level_req: 1
+  },
+  {
+    id: 7,
+    title: "Fibonacci",
+    description: "Generate fibonacci sequence",
+    difficulty: "medium",
+    language: "python",
+    xp_reward: 260,
+    game_mode: "quest",
+    level_req: 1
+  },
+  {
+    id: 8,
+    title: "Reverse Array",
+    description: "Reverse an array",
+    difficulty: "hard",
+    language: "python",
+    xp_reward: 300,
+    game_mode: "quest",
+    level_req: 1
+  },
+  {
+    id: 9,
+    title: "Merge Sort",
+    description: "Implement merge sort",
+    difficulty: "hard",
+    language: "python",
+    xp_reward: 400,
+    game_mode: "boss",
+    level_req: 1
+  },
+  {
+    id: 10,
+    title: "Valid Parentheses",
+    description: "Check valid parentheses",
+    difficulty: "boss",
+    language: "python",
+    xp_reward: 500,
+    game_mode: "boss",
+    level_req: 1
+  },
+
+  // JAVASCRIPT
+  {
+    id: 11,
+    title: "Console Hello",
+    description: "Print Hello World",
+    difficulty: "easy",
+    language: "javascript",
+    xp_reward: 100,
+    game_mode: "puzzle",
+    level_req: 1
+  },
+  {
+    id: 12,
+    title: "Add Numbers",
+    description: "Return sum",
+    difficulty: "easy",
+    language: "javascript",
+    xp_reward: 100,
+    game_mode: "puzzle",
+    level_req: 1
+  },
+  {
+    id: 13,
+    title: "Odd Even",
+    description: "Check odd even",
+    difficulty: "easy",
+    language: "javascript",
+    xp_reward: 120,
+    game_mode: "puzzle",
+    level_req: 1
+  },
+  {
+    id: 14,
+    title: "Palindrome JS",
+    description: "Check palindrome",
+    difficulty: "medium",
+    language: "javascript",
+    xp_reward: 200,
+    game_mode: "battle",
+    level_req: 1
+  },
+  {
+    id: 15,
+    title: "Factorial JS",
+    description: "Find factorial",
+    difficulty: "medium",
+    language: "javascript",
+    xp_reward: 220,
+    game_mode: "battle",
+    level_req: 1
+  },
+  {
+    id: 16,
+    title: "Prime JS",
+    description: "Check prime",
+    difficulty: "medium",
+    language: "javascript",
+    xp_reward: 240,
+    game_mode: "battle",
+    level_req: 1
+  },
+  {
+    id: 17,
+    title: "Array Max",
+    description: "Find max element",
+    difficulty: "medium",
+    language: "javascript",
+    xp_reward: 260,
+    game_mode: "quest",
+    level_req: 1
+  },
+  {
+    id: 18,
+    title: "Reverse String",
+    description: "Reverse string",
+    difficulty: "hard",
+    language: "javascript",
+    xp_reward: 300,
+    game_mode: "quest",
+    level_req: 1
+  },
+  {
+    id: 19,
+    title: "Bubble Sort",
+    description: "Implement bubble sort",
+    difficulty: "hard",
+    language: "javascript",
+    xp_reward: 400,
+    game_mode: "boss",
+    level_req: 1
+  },
+  {
+    id: 20,
+    title: "Stack Problem",
+    description: "Implement stack",
+    difficulty: "boss",
+    language: "javascript",
+    xp_reward: 500,
+    game_mode: "boss",
+    level_req: 1
+  },
+
+  // JAVA
+  {
+    id: 21,
+    title: "Java Hello",
+    description: "Print Hello",
+    difficulty: "easy",
+    language: "java",
+    xp_reward: 100,
+    game_mode: "puzzle",
+    level_req: 1
+  },
+  {
+    id: 22,
+    title: "Addition Java",
+    description: "Add numbers",
+    difficulty: "easy",
+    language: "java",
+    xp_reward: 100,
+    game_mode: "puzzle",
+    level_req: 1
+  },
+  {
+    id: 23,
+    title: "Even Java",
+    description: "Check even",
+    difficulty: "easy",
+    language: "java",
+    xp_reward: 120,
+    game_mode: "puzzle",
+    level_req: 1
+  },
+  {
+    id: 24,
+    title: "Palindrome Java",
+    description: "Check palindrome",
+    difficulty: "medium",
+    language: "java",
+    xp_reward: 200,
+    game_mode: "battle",
+    level_req: 1
+  },
+  {
+    id: 25,
+    title: "Factorial Java",
+    description: "Find factorial",
+    difficulty: "medium",
+    language: "java",
+    xp_reward: 220,
+    game_mode: "battle",
+    level_req: 1
+  },
+  {
+    id: 26,
+    title: "Prime Java",
+    description: "Check prime",
+    difficulty: "medium",
+    language: "java",
+    xp_reward: 240,
+    game_mode: "battle",
+    level_req: 1
+  },
+  {
+    id: 27,
+    title: "Array Sum",
+    description: "Sum array",
+    difficulty: "medium",
+    language: "java",
+    xp_reward: 260,
+    game_mode: "quest",
+    level_req: 1
+  },
+  {
+    id: 28,
+    title: "Reverse Array Java",
+    description: "Reverse array",
+    difficulty: "hard",
+    language: "java",
+    xp_reward: 300,
+    game_mode: "quest",
+    level_req: 1
+  },
+  {
+    id: 29,
+    title: "Binary Search",
+    description: "Implement binary search",
+    difficulty: "hard",
+    language: "java",
+    xp_reward: 400,
+    game_mode: "boss",
+    level_req: 1
+  },
+  {
+    id: 30,
+    title: "Queue Java",
+    description: "Implement queue",
+    difficulty: "boss",
+    language: "java",
+    xp_reward: 500,
+    game_mode: "boss",
+    level_req: 1
+  },
+
+  // CPP
+  {
+    id: 31,
+    title: "C++ Hello",
+    description: "Print Hello",
+    difficulty: "easy",
+    language: "cpp",
+    xp_reward: 100,
+    game_mode: "puzzle",
+    level_req: 1
+  },
+  {
+    id: 32,
+    title: "Addition C++",
+    description: "Add numbers",
+    difficulty: "easy",
+    language: "cpp",
+    xp_reward: 100,
+    game_mode: "puzzle",
+    level_req: 1
+  },
+  {
+    id: 33,
+    title: "Even C++",
+    description: "Check even",
+    difficulty: "easy",
+    language: "cpp",
+    xp_reward: 120,
+    game_mode: "puzzle",
+    level_req: 1
+  },
+  {
+    id: 34,
+    title: "Palindrome C++",
+    description: "Check palindrome",
+    difficulty: "medium",
+    language: "cpp",
+    xp_reward: 200,
+    game_mode: "battle",
+    level_req: 1
+  },
+  {
+    id: 35,
+    title: "Factorial C++",
+    description: "Find factorial",
+    difficulty: "medium",
+    language: "cpp",
+    xp_reward: 220,
+    game_mode: "battle",
+    level_req: 1
+  },
+  {
+    id: 36,
+    title: "Prime C++",
+    description: "Check prime",
+    difficulty: "medium",
+    language: "cpp",
+    xp_reward: 240,
+    game_mode: "battle",
+    level_req: 1
+  },
+  {
+    id: 37,
+    title: "Array Max C++",
+    description: "Find max element",
+    difficulty: "medium",
+    language: "cpp",
+    xp_reward: 260,
+    game_mode: "quest",
+    level_req: 1
+  },
+  {
+    id: 38,
+    title: "Reverse String C++",
+    description: "Reverse string",
+    difficulty: "hard",
+    language: "cpp",
+    xp_reward: 300,
+    game_mode: "quest",
+    level_req: 1
+  },
+  {
+    id: 39,
+    title: "Quick Sort",
+    description: "Implement quick sort",
+    difficulty: "hard",
+    language: "cpp",
+    xp_reward: 400,
+    game_mode: "boss",
+    level_req: 1
+  },
+  {
+    id: 40,
+    title: "Graph BFS",
+    description: "Implement BFS",
+    difficulty: "boss",
+    language: "cpp",
+    xp_reward: 500,
+    game_mode: "boss",
+    level_req: 1
   }
 ]
   const [progress, setProgress] = useState([])
