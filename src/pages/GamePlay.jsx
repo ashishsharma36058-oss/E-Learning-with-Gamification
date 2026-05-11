@@ -62,8 +62,11 @@ const speakPraise = () => {
     speech.volume = 1
 
     window.speechSynthesis.cancel()
-    window.speechSynthesis.speak(speech)
-  }
+
+setTimeout(() => {
+  window.speechSynthesis.speak(speech)
+}, 500)
+  }  
 
   setTimeout(() => {
   speakNow()
