@@ -1,3 +1,4 @@
+import ProfileModal from "../components/ProfileModal"
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import useStore from '../store/useStore'
 import toast from 'react-hot-toast'
@@ -9,6 +10,7 @@ export default function Navbar() {
   const { user, isLoggedIn, logout } = useStore()
   const { pathname } = useLocation()
   const navigate = useNavigate()
+  const [openProfile, setOpenProfile] = useState(false)
 
   const xpForNext = user ? user.level * 200 + 100 : 300
   const pct = user ? Math.min((user.xp / xpForNext) * 100, 100) : 0
@@ -72,7 +74,7 @@ export default function Navbar() {
                 <div className="xp-bar-fill" style={{ width: `${pct}%` }} />
               </div>
             </div>
-            <button onClick={() => navigate('/dashboard')} title="Profile" style={{
+            <button onClick={() => setOpenProfile(true)} title="Profile" style={{
               width: 36, height: 36, borderRadius: '50%',
               background: 'linear-gradient(135deg, var(--purple), var(--orange))',
               border: 'none', cursor: 'pointer',
@@ -93,6 +95,10 @@ export default function Navbar() {
           <Link to="/register"><button className="btn btn-primary btn-sm">Get Started</button></Link>
         </div>
       )}
+      <ProfileModal
+  open={openProfile}
+  onClose={() => setOpenProfile(false)}
+/>
     </nav>
   )
 }
