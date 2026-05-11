@@ -33,6 +33,7 @@ export default function GamePlay() {
   const [hintsUsed, setHintsUsed] = useState(0)
   const [submitting, setSubmitting] = useState(false)
   const [result, setResult] = useState(null)
+  const [aiHint, setAiHint] = useState('')
   const [levelUp, setLevelUp] = useState(null)
   const [xpFloat, setXpFloat] = useState(null)
   const [tab, setTab] = useState('problem')
@@ -162,6 +163,30 @@ const speakPraise = () => {
     setHintsUsed((h) => h + 1)
   }
 
+  const generateHint = () => {
+  const hints = {
+    variables: 'Hint: Variable data store karta hai.',
+    loop: 'Hint: Loop repeated task ke liye use hota hai.',
+    function: 'Hint: Function reusable code block hota hai.',
+    list: 'Hint: List multiple values store karta hai.',
+    string: 'Hint: String text data hota hai.',
+    ifelse: 'Hint: if-else decision making ke liye use hota hai.',
+    recursion: 'Hint: Function khud ko call karta hai.',
+    class: 'Hint: Class object banane ka blueprint hota hai.',
+    dictionary: 'Hint: Dictionary key-value pair store karta hai.'
+  }
+
+  const text = challenge?.title?.toLowerCase() || ''
+
+  for (const key in hints) {
+    if (text.includes(key)) {
+      setAiHint(hints[key])
+      return
+    }
+  }
+
+  setAiHint('Hint: Problem ko step by step solve karo.')
+}
   const submit = async () => {
     if (!ch || submitting || timeLeft === 0) return
 
@@ -289,14 +314,33 @@ const speakPraise = () => {
           💡 Hint ({hints.length - hintsUsed})
         </button>
 
-        <button
-          className="btn btn-primary"
-          style={{ padding: '9px 22px', fontSize: 13 }}
-          onClick={submit}
-          disabled={submitting || timeLeft === 0}
-        >
-          {submitting ? 'Running...' : '▶ Submit'}
-        </button>
+<button
+  className="btn btn-primary"
+  style={{ padding: '9px 22px', fontSize: 13 }}
+  onClick={submit}
+  disabled={submitting || timeLeft === 0}
+>
+  {submitting ? 'Running...' : '▶ Submit'}
+</button>
+
+<button
+  onClick={generateHint}
+  style={{
+    marginTop: 12,
+    width: '100%',
+    padding: '12px',
+    borderRadius: 10,
+    border: 'none',
+    background: '#ff9800',
+    color: 'white',
+    fontWeight: 'bold',
+    cursor: 'pointer'
+  }}
+>
+  🤖 AI Hint
+</button>
+         
+       
       </div>
 
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
