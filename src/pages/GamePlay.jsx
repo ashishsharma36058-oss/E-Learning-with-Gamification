@@ -228,7 +228,7 @@ api.get(`/challenges/${id}`).then(r => {
                     </div>
                   ))
                 )}
-                {hintsUsed > 0 && hintsUsed < ch.hints.length && (
+                {hintsUsed > 0 && hintsUsed < (ch.hints || []).length && (
                   <button className="btn btn-secondary btn-sm" style={{ marginTop: 8, width: '100%' }} onClick={showHint}>
                     Reveal Hint {hintsUsed + 1}
                   </button>
