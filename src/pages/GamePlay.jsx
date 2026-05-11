@@ -28,7 +28,9 @@ export default function GamePlay() {
   const timerRef = useRef(null)
 
 useEffect(() => {
-  const demoChallenge = location.state?.challenge
+  const demoChallenge =
+  location.state?.challenge ||
+  JSON.parse(localStorage.getItem('current_challenge') || 'null')
 
   if (demoChallenge) {
     setCh(demoChallenge)
