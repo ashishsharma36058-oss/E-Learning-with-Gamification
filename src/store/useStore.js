@@ -2,10 +2,13 @@ import { create } from 'zustand'
 import api from '../api/client'
 
 const useStore = create((set, get) => ({
-  user: null,
-  isLoggedIn: false,
+  user: JSON.parse(localStorage.getItem('g_user') || 'null'),
+  isLoggedIn: !!localStorage.getItem('g_access'),
 
-  setUser: (user) => set({ user, isLoggedIn: !!user }),
+  setUser: (user) => {
+  localStorage.setItem('g_user', JSON.stringify(user))
+  set({ user, isLoggedIn: !!user })
+},
 
   logout: () => {
     localStorage.removeItem('g_access')
