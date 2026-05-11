@@ -38,13 +38,18 @@ useEffect(() => {
     return
   }
 
-  api.get(`/challenges/${id}`).then(r => {
-    setCh(r.data)
-    setCode(r.data.starter_code || "")
-    setTimeLeft(r.data.time_limit || 120)
-    startTime.current = Date.now()
-  }).catch(() => navigate('/play'))
-}, [id])
+api.get(`/challenges/${id}`).then(r => {
+  setCh({
+    ...r.data,
+    test_cases: r.data.test_cases || [],
+    hints: r.data.hints || []
+  })
+
+  setCode(r.data.starter_code || "")
+  setTimeLeft(r.data.time_limit || 120)
+  startTime.current = Date.now()
+
+}).catch(() => navigate('/play'))
 
   useEffect(() => {
     if (!ch) return
