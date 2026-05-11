@@ -20,7 +20,7 @@ function AuthPage({ mode }) {
     if (!form.username.trim()) e.username = 'Username is required'
     if (!isLogin && !form.email.trim()) e.email = 'Email is required'
     if (!form.password) e.password = 'Password is required'
-    if (!isLogin && form.password.length < 8) e.password = 'Minimum 8 characters required'
+    
     setErrors(e)
     return Object.keys(e).length === 0
   }
@@ -149,7 +149,7 @@ return (
               <input
                 type={showPassword ? 'text' : 'password'}
                 onKeyDown={e => e.key === 'Enter' && submit()}
-                placeholder={isLogin ? '••••••••' : 'Min 8 chars · 1 uppercase · 1 number'}
+                placeholder="Enter your password"
                 autoComplete={isLogin ? 'current-password' : 'new-password'}
                 style={errors.password ? { borderColor: 'var(--red)' } : {}}
               />
