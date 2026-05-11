@@ -54,14 +54,25 @@ const speakPraise = () => {
 
   speech.lang = 'en-IN'
   speech.rate = 0.9
-  speech.pitch = 1
+  speech.pitch = 1.3
   speech.volume = 1
 
   const voices = window.speechSynthesis.getVoices()
 
   const indianVoice =
-    voices.find(v => v.lang === 'hi-IN') ||
-    voices.find(v => v.lang === 'en-IN')
+  voices.find(v =>
+    v.lang.includes('en-IN') &&
+    v.name.toLowerCase().includes('female')
+  ) ||
+  voices.find(v =>
+    v.lang.includes('hi-IN')
+  ) ||
+  voices.find(v =>
+    v.name.toLowerCase().includes('zira')
+  ) ||
+  voices.find(v =>
+    v.name.toLowerCase().includes('google')
+  )
 
   if (indianVoice) {
     speech.voice = indianVoice
