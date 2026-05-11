@@ -178,8 +178,11 @@ export default function GamePlay() {
 
       toast.success(praise)
 
+      const cheer = new Audio(cheerSound)
+      cheer.play()
+
       const speech = new SpeechSynthesisUtterance(praise)
-      speech.lang = "en-US"
+      speech.lang = "hi-IN"
       speech.rate = 1
       speech.pitch = 1.1
 
