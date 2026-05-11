@@ -218,7 +218,7 @@ api.get(`/challenges/${id}`).then(r => {
                     Reveal Hint 1
                   </button>
                 ) : (
-                  ch.hints.slice(0, hintsUsed).map((h, i) => (
+                  (ch.hints || []).slice(0, hintsUsed).map((h, i) => (
                     <div key={i} style={{
                       background: 'rgba(245,158,11,0.07)', border: '1px solid rgba(245,158,11,0.2)',
                       borderRadius: 8, padding: '10px 14px', marginBottom: 10,
