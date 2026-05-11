@@ -485,8 +485,8 @@ setTimeout(() => {
         </div>
       </div>
 
-      {levelUp && (
-        <LevelUpModal
+           {levelUp && (
+             <LevelUpModal
           newLevel={levelUp}
           onClose={() => {
             setLevelUp(null)
@@ -496,4 +496,4 @@ setTimeout(() => {
       )}
     </div>
   )
-}
+} 
