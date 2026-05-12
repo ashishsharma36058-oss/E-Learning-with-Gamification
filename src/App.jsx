@@ -8,6 +8,7 @@ import Landing from './pages/Landing'
 import Dashboard from './pages/Dashboard'
 import Play from './pages/Play'
 import GamePlay from './pages/GamePlay'
+import BossFight from "./pages/BossFight"
 import Leaderboard from './pages/Leaderboard'
 import { LoginPage, RegisterPage } from './pages/Auth'
 
@@ -39,6 +40,7 @@ export default function App() {
         {/* Auth — no navbar */}
         <Route path="/login"    element={isLoggedIn ? <Navigate to="/dashboard" /> : <LoginPage />} />
         <Route path="/register" element={isLoggedIn ? <Navigate to="/dashboard" /> : <RegisterPage />} />
+        <Route path="/boss-fight" element={<BossFight />} />
 
         {/* Main app — with navbar */}
         <Route path="/*" element={
