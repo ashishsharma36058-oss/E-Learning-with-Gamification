@@ -13,11 +13,18 @@ export default function ChallengeCard({ challenge, completed, userLevel }) {
     <div
       className={`challenge-card ${challenge.difficulty} ${locked ? 'locked' : ''}`}
       onClick={() => {
-        if (locked) return
+        onClick={() => {
+  if (locked) return
 
-        localStorage.setItem('current_challenge', JSON.stringify(challenge))
-        navigate(`/play/${challenge.id}`, { state: { challenge } })
-      }}    
+  localStorage.setItem('current_challenge', JSON.stringify(challenge))
+
+  navigate(
+    challenge.difficulty === 'boss'
+      ? '/boss-fight'
+      : `/play/${challenge.id}`,
+    { state: { challenge } }
+  )
+}}
     >
       {/* Icon */}
       <div style={{
