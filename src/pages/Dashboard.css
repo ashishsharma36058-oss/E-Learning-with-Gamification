@@ -51,6 +51,7 @@
 }
 
 .dash-sidebar button {
+  transition: all 0.3s ease;
   border: 1px solid transparent;
   background: transparent;
   color: #cbd5e1;
@@ -63,6 +64,8 @@
 
 .dash-sidebar button.active,
 .dash-sidebar button:hover {
+  transform: translateX(6px);
+  box-shadow: 0 0 18px rgba(239, 68, 68, 0.35);
   background: rgba(239, 68, 68, 0.13);
   border-color: rgba(239, 68, 68, 0.45);
   color: white;
