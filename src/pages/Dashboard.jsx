@@ -12,14 +12,44 @@ export default function Dashboard() {
   useEffect(() => {
     async function loadDashboard() {
       try {
-        const res = await fetch(`${API}/api/v1/dashboard/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const fakeData = {
+  user: {
+    name: "Ashish Sharma",
+    level: 23,
+    avatar: "/mentor-cyborg.png",
+  },
 
-        const result = await res.json();
-        setData(result);
+  stats: {
+    xp: 2450,
+    nextLevelXp: 3000,
+    completedChallenges: 18,
+    totalChallenges: 50,
+    rank: "Top 8%",
+    activityPercent: 78,
+  },
+
+  currentCourse: {
+    title: "React.js Basics",
+    progress: 67,
+  },
+
+  dailyChallenge: {
+    title: "Solve 3 JavaScript Challenges",
+  },
+
+  leaderboard: [
+    { id: 1, name: "Aryan", xp: 2450 },
+    { id: 2, name: "Priya", xp: 2300 },
+    { id: 3, name: "You", xp: 2100 },
+  ],
+
+  boss: {
+    title: "AI OVERLORD",
+    description: "Complete challenges to defeat the AI boss.",
+  },
+};
+
+setData(fakeData);
       } catch (err) {
         console.error("Dashboard load error:", err);
       } finally {
