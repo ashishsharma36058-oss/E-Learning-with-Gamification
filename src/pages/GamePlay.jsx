@@ -187,7 +187,7 @@ const speakPraise = () => {
     dictionary: 'Hint: Dictionary key-value pair store karta hai.'
   }
 
-  const text = challenge?.title?.toLowerCase() || ''
+  const text = ch?.title?.toLowerCase() || ''
 
   for (const key in hints) {
     if (text.includes(key)) {
@@ -220,7 +220,7 @@ const speakPraise = () => {
         setXpFloat(`+${data.xp_earned} XP`)
         setTimeout(() => setXpFloat(null), 2500)
 
-        addXP(data.xp_earned, data.level_up ? data.new_level : null)
+        addXP(data.xp_earned)
         speakPraise()
 
         if (data.level_up) {
