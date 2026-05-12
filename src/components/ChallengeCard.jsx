@@ -12,8 +12,8 @@ export default function ChallengeCard({ challenge, completed, userLevel }) {
   return (
     <div
       className={`challenge-card ${challenge.difficulty} ${locked ? 'locked' : ''}`}
+      
       onClick={() => {
-        onClick={() => {
   if (locked) return
 
   localStorage.setItem('current_challenge', JSON.stringify(challenge))
