@@ -3,121 +3,116 @@ import { useNavigate } from "react-router-dom"
 
 export default function BossFight() {
   const navigate = useNavigate()
-
   const [bossHp, setBossHp] = useState(100)
-  const [message, setMessage] = useState("⚠️ J.A.R.V.I.S activated. Waiting for your code attack...")
-  const [attacking, setAttacking] = useState(false)
-  const [damaged, setDamaged] = useState(false)
-  const [intro, setIntro] = useState(true)
+  const [msg, setMsg] = useState("J.A.R.V.I.S activated. Waiting for your code attack...")
+  const [hit, setHit] = useState(false)
 
   const attackBoss = () => {
-    if (bossHp === 0) return
+    if (bossHp <= 0) return
 
-    setAttacking(true)
-    setDamaged(true)
-
-    const damage = Math.floor(Math.random() * 18) + 12
+    const damage = Math.floor(Math.random() * 18) + 10
     const newHp = Math.max(bossHp - damage, 0)
 
-    setTimeout(() => {
-      setBossHp(newHp)
+    setHit(true)
+    setTimeout(() => setHit(false), 500)
 
-      if (newHp === 0) {
-        setMessage("🏆 BOSS DEFEATED! You earned +500 XP and Legendary Badge!")
-      } else if (newHp < 35) {
-        setMessage(`🚨 Critical hit! J.A.R.V.I.S is unstable. Damage: ${damage}%`)
-      } else {
-        setMessage(`⚡ Attack successful! You dealt ${damage}% damage.`)
-      }
-    }, 350)
+    setBossHp(newHp)
 
-    setTimeout(() => {
-      setAttacking(false)
-      setDamaged(false)
-    }, 900)
+    if (newHp === 0) {
+      setMsg("🏆 BOSS DEFEATED! +500 XP unlocked.")
+    } else {
+      setMsg(`⚡ Attack successful! You dealt ${damage}% damage.`)
+    }
   }
 
   return (
     <>
-      <style>{styles}</style>
+      <style>{css}</style>
 
-      {intro && (
-        <div className="intro-screen">
-          <div className="intro-robot">🤖</div>
-          <h1>J.A.R.V.I.S MODE ACTIVATED</h1>
-          <p>Boss Fight System Loading...</p>
-          <button onClick={() => setIntro(false)}>Enter Battle</button>
-        </div>
-      )}
-
-      <div className={`boss-page ${attacking ? "screen-shake" : ""}`}>
-        <button onClick={() => navigate("/dashboard")} className="back-btn">
-          ← Back
-        </button>
-
-        <div className="boss-layout">
-          <div className="panel">
-            <h2>🧑‍💻 Coder Profile</h2>
-            <div className="avatar">AS</div>
-            <h3>Ashish</h3>
-            <p className="danger-text">Elite Coder</p>
-            <h1>Level 23</h1>
-            <p>XP: 2450 / 3000</p>
-            <p>🔥 Streak: 12 days</p>
-            <p>🏅 Rank: Legendary</p>
+      <div className={`boss-page ${hit ? "shake" : ""}`}>
+        <nav className="topbar">
+          <div className="brand">🦊 GAMIFY <span>CODE. BATTLE. CONQUER.</span></div>
+          <div className="navs">
+            <button onClick={() => navigate("/dashboard")}>Dashboard</button>
+            <button onClick={() => navigate("/play")}>Challenges</button>
+            <button className="active">Boss Fight</button>
+            <button>AI Mentor</button>
           </div>
+          <div className="user">⚡ 2450 XP 💎 125 <span>AS</span></div>
+        </nav>
 
-          <div>
-            <div className="hero-panel">
-              <h4 className="danger-text">BOSS FIGHT</h4>
-              <h1 className="title">AI Overlord</h1>
-              <h1 className="boss-title">J.A.R.V.I.S</h1>
+        <main className="grid">
+          <aside className="left">
+            <section className="card profile">
+              <h3>CODER PROFILE</h3>
+              <div className="avatar">AS</div>
+              <h2>Ashish</h2>
+              <p className="red">ELITE CODER</p>
+              <div className="level">23</div>
+              <p>XP: 2,450 / 3,000</p>
+              <p>🔥 Streak: 12 days</p>
+              <p>🏆 Rank: Legendary</p>
+            </section>
 
-              <p className="hero-desc">
-                An advanced AI has taken control of the system. Defeat J.A.R.V.I.S
-                by solving coding challenges and launching clean code attacks.
-              </p>
+            <section className="card">
+              <h3>BADGES</h3>
+              <div className="badges">🏅 💎 🔥 👑</div>
+            </section>
 
-              <div className={`robot-box ${damaged ? "robot-damaged" : ""}`}>
-                <div className="eye eye-left"></div>
-                <div className="eye eye-right"></div>
-                <div className="robot-hand left-hand">🦾</div>
-                <div className="robot-hand right-hand">🦾</div>
-                <div className="robot-face">🤖</div>
+            <section className="card mentor">
+              <h3>ALLY - AI MENTOR</h3>
+              <div className="mentor-face">🤖</div>
+              <b>NOVA</b>
+              <p>Use inheritance wisely. Clean code is your secret weapon.</p>
+            </section>
+          </aside>
+
+          <section className="center">
+            <div className="hero card">
+              <div>
+                <div className="tag">BOSS FIGHT</div>
+                <h2>AI OVERLORD</h2>
+                <h1>J.A.R.V.I.S</h1>
+                <p>
+                  An advanced AI has taken control of the system. Defeat J.A.R.V.I.S
+                  by solving the ultimate coding challenge.
+                </p>
+
+                <div className="dialog">
+                  <b>J.A.R.V.I.S</b>
+                  <p>Welcome back, Ashish. Let’s see if your code is strong enough.</p>
+                </div>
               </div>
 
-              <div className="mission-box">
-                <b>🎯 Mission Objective:</b>
-                <p>
-                  Use OOP concepts to create a system that can bypass the AI
-                  security and shut it down.
-                </p>
+              <div className={`villain ${hit ? "hit" : ""}`}>
+                <div className="eye l"></div>
+                <div className="eye r"></div>
+                <div className="core"></div>
+                <div className="head">◉</div>
               </div>
             </div>
 
-            <div className="bottom-grid">
-              <div className="panel">
-                <h2>Challenge</h2>
-                <p className="danger-text">Problem</p>
-                <p>
-                  Design a class <b>Hacker</b> that can attack the AI system using
-                  inheritance and methods.
-                </p>
+            <div className="mission card">
+              🎯 <b>MISSION OBJECTIVE:</b> Use OOP concepts to bypass AI security and shut it down.
+            </div>
 
+            <div className="work">
+              <section className="card challenge">
+                <h3>CHALLENGE</h3>
+                <p className="red">Problem</p>
+                <p>Design a class <b>Hacker</b> that can attack the AI system.</p>
                 <ul>
                   <li>Create a class Hacker</li>
                   <li>Add attack method</li>
                   <li>Create EliteHacker child class</li>
                   <li>Return final AI health</li>
                 </ul>
+                <h3 className="red">DIFFICULTY: LEGENDARY ✦✦✦✦✦</h3>
+              </section>
 
-                <h3 className="danger-text">Difficulty: Legendary</h3>
-              </div>
-
-              <div className="panel">
-                <h2>Code Editor</h2>
-
-                <pre className="code-box">{`class Hacker:
+              <section className="card editor">
+                <h3>CODE EDITOR</h3>
+                <pre>{`class Hacker:
     def __init__(self, name):
         self.name = name
         self.damage = 20
@@ -130,384 +125,325 @@ class EliteHacker(Hacker):
     def special_attack(self, ai):
         ai.health -= self.damage * 2
         return ai.health`}</pre>
+                <button className="run">▶ RUN CODE</button>
+              </section>
+            </div>
 
-                <button onClick={attackBoss} className="attack-btn">
-                  ⚡ SUBMIT ATTACK
-                </button>
+            <section className="card progress">
+              <h3>BATTLE PROGRESS</h3>
+              <div className="steps">
+                <span>🛡️ Scout</span>
+                <span>⚔️ Mini Boss</span>
+                <span>💠 Guardian</span>
+                <span className="red">👾 J.A.R.V.I.S</span>
               </div>
-            </div>
-          </div>
+            </section>
+          </section>
 
-          <div className="panel">
-            <h2>Boss Status</h2>
+          <aside className="right">
+            <section className="card status">
+              <h3>BOSS STATUS <span>● LIVE</span></h3>
+              <div className={`boss-mask ${hit ? "hit" : ""}`}>◉</div>
+              <h2>J.A.R.V.I.S</h2>
+              <p>HP: {bossHp}%</p>
+              <div className="hp"><div style={{ width: `${bossHp}%` }} /></div>
 
-            <div className={`boss-face ${damaged ? "boss-hit" : ""}`}>🤖</div>
+              <h4 className="red">ATTACK PATTERN</h4>
+              <p>System overload, memory bugs, code injection.</p>
 
-            <h3>J.A.R.V.I.S</h3>
-
-            <p>HP: {bossHp}%</p>
-
-            <div className="hp-track">
-              <div className="hp-fill" style={{ width: `${bossHp}%` }}></div>
-            </div>
-
-            <div className="status-box">
-              <h3 className="danger-text">Attack Pattern</h3>
-              <p>System overload, time pressure, memory bugs.</p>
-
-              <h3 className="blue-text">Weakness</h3>
+              <h4 className="blue">WEAKNESS</h4>
               <p>Clean Code + OOP + Optimization</p>
-            </div>
+            </section>
 
-            <div className="output-box">
-              <h3>Output</h3>
-              <p>{message}</p>
-            </div>
+            <section className="card output">
+              <h3>OUTPUT</h3>
+              <p>{msg}</p>
+            </section>
 
-            <div className="reward-box">
-              <h3>Rewards</h3>
+            <section className="card rewards">
+              <h3>REWARDS</h3>
               <p>💎 +500 XP</p>
               <p>🏅 Boss Badge</p>
               <p>🔥 Legendary Rank</p>
-            </div>
-          </div>
-        </div>
+            </section>
+
+            <button onClick={attackBoss} className="attack">
+              ⚡ SUBMIT ATTACK
+            </button>
+          </aside>
+        </main>
       </div>
     </>
   )
 }
 
-const styles = `
-.boss-page {
-  min-height: 100vh;
-  background: radial-gradient(circle at top, #2b0505, #050008 55%, #020617);
-  color: white;
-  font-family: sans-serif;
-  padding: 28px;
-  overflow: hidden;
+const css = `
+.boss-page{
+  min-height:100vh;
+  background:
+    radial-gradient(circle at 50% 20%,rgba(220,38,38,.35),transparent 35%),
+    linear-gradient(135deg,#020617,#050008 45%,#120407);
+  color:white;
+  font-family:Arial, sans-serif;
+  padding:0;
 }
-
-.back-btn {
-  background: #111827;
-  color: white;
-  border: 1px solid #ef4444;
-  border-radius: 12px;
-  padding: 10px 16px;
-  cursor: pointer;
-  margin-bottom: 20px;
+.topbar{
+  height:64px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 22px;
+  background:rgba(0,0,0,.65);
+  border-bottom:1px solid rgba(239,68,68,.35);
 }
-
-.boss-layout {
-  display: grid;
-  grid-template-columns: 280px 1fr 320px;
-  gap: 22px;
+.brand{
+  color:#ef4444;
+  font-weight:900;
+  font-size:22px;
 }
-
-.panel {
-  background: rgba(15,23,42,0.88);
-  border: 1px solid rgba(239,68,68,0.45);
-  border-radius: 18px;
-  padding: 22px;
-  box-shadow: 0 0 30px rgba(239,68,68,0.18);
+.brand span{
+  display:block;
+  font-size:10px;
+  color:white;
 }
-
-.hero-panel {
-  background: rgba(15,23,42,0.88);
-  border: 1px solid rgba(239,68,68,0.45);
-  border-radius: 18px;
-  padding: 22px;
-  box-shadow: 0 0 30px rgba(239,68,68,0.18);
-  min-height: 420px;
-  position: relative;
-  overflow: hidden;
+.navs{
+  display:flex;
+  gap:20px;
 }
-
-.avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: linear-gradient(135deg,#ef4444,#f97316);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 28px;
+.navs button{
+  background:transparent;
+  color:white;
+  border:0;
+  cursor:pointer;
+  font-weight:700;
 }
-
-.title {
-  font-size: 54px;
-  margin: 0;
+.navs .active{
+  color:#ef4444;
+  border-bottom:2px solid #ef4444;
 }
-
-.boss-title {
-  font-size: 72px;
-  margin: 0;
-  color: #ef4444;
-  text-shadow: 0 0 25px #ef4444;
+.user span{
+  margin-left:12px;
+  background:#ef4444;
+  padding:10px;
+  border-radius:50%;
 }
-
-.hero-desc {
-  max-width: 520px;
-  color: #cbd5e1;
-  font-size: 18px;
+.grid{
+  display:grid;
+  grid-template-columns:260px 1fr 340px;
+  gap:18px;
+  padding:18px;
 }
-
-.robot-box {
-  position: absolute;
-  right: 35px;
-  top: 55px;
-  width: 240px;
-  height: 240px;
-  border-radius: 50%;
-  background: radial-gradient(circle,#7f1d1d 0%,#450a0a 45%,transparent 72%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  filter: drop-shadow(0 0 35px #ef4444);
-  animation: robotFloat 3s ease-in-out infinite;
+.card{
+  background:rgba(3,7,18,.82);
+  border:1px solid rgba(239,68,68,.45);
+  border-radius:14px;
+  padding:18px;
+  box-shadow:0 0 25px rgba(239,68,68,.12);
 }
-
-.robot-face {
-  font-size: 145px;
-  z-index: 2;
+.left,.right{
+  display:grid;
+  gap:14px;
+  align-content:start;
 }
-
-.eye {
-  position: absolute;
-  top: 82px;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: red;
-  animation: eyeGlow 1.1s infinite;
-  z-index: 3;
+.profile .avatar{
+  width:82px;
+  height:82px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#ef4444,#f97316);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:30px;
+  font-weight:900;
 }
-
-.eye-left {
-  left: 88px;
+.level{
+  width:95px;
+  height:95px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:8px solid #ef4444;
+  font-size:38px;
+  font-weight:900;
 }
-
-.eye-right {
-  right: 88px;
+.red{color:#ef4444}
+.blue{color:#38bdf8}
+.badges{font-size:32px}
+.mentor-face{font-size:70px;filter:drop-shadow(0 0 20px #38bdf8)}
+.center{display:grid;gap:14px}
+.hero{
+  min-height:390px;
+  position:relative;
+  overflow:hidden;
+  display:grid;
+  grid-template-columns:1fr 1fr;
 }
-
-.robot-hand {
-  position: absolute;
-  font-size: 54px;
-  top: 140px;
-  animation: handMove 1.4s ease-in-out infinite;
+.tag{
+  border:1px solid #ef4444;
+  color:#ef4444;
+  display:inline-block;
+  padding:8px 22px;
+  border-radius:8px;
+  font-weight:800;
 }
-
-.left-hand {
-  left: 5px;
+.hero h1{
+  font-size:70px;
+  margin:5px 0;
+  color:#ef4444;
+  letter-spacing:10px;
+  text-shadow:0 0 25px #ef4444;
 }
-
-.right-hand {
-  right: 5px;
-  transform: scaleX(-1);
+.hero h2{font-size:26px;letter-spacing:3px}
+.dialog{
+  margin-top:25px;
+  max-width:280px;
+  border:1px solid #ef4444;
+  background:rgba(127,29,29,.28);
+  padding:16px;
+  border-radius:10px;
 }
-
-.robot-damaged {
-  animation: robotHit 0.3s linear 3;
+.villain{
+  position:relative;
+  height:360px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  animation:float 3s ease-in-out infinite;
 }
-
-.mission-box {
-  margin-top: 35px;
-  background: rgba(127,29,29,0.5);
-  border: 1px solid #ef4444;
-  padding: 18px;
-  border-radius: 14px;
+.villain:before{
+  content:"";
+  position:absolute;
+  width:260px;
+  height:320px;
+  border-radius:46% 46% 35% 35%;
+  background:linear-gradient(160deg,#111827,#020617 45%,#7f1d1d);
+  box-shadow:0 0 70px rgba(239,68,68,.7);
 }
-
-.bottom-grid {
-  display: grid;
-  grid-template-columns: 1fr 1.4fr;
-  gap: 20px;
-  margin-top: 20px;
+.head{
+  position:absolute;
+  top:60px;
+  font-size:115px;
+  color:#111827;
+  text-shadow:0 0 35px #ef4444;
 }
-
-.code-box {
-  background: #020617;
-  padding: 18px;
-  border-radius: 14px;
-  color: #22c55e;
-  min-height: 250px;
-  overflow: auto;
+.eye{
+  position:absolute;
+  top:135px;
+  width:22px;
+  height:12px;
+  background:red;
+  border-radius:50%;
+  box-shadow:0 0 22px red;
+  z-index:5;
+  animation:blink 1.4s infinite;
 }
-
-.attack-btn {
-  margin-top: 18px;
-  width: 100%;
-  padding: 15px;
-  border-radius: 14px;
-  border: none;
-  background: linear-gradient(135deg,#dc2626,#f97316);
-  color: white;
-  font-weight: bold;
-  font-size: 16px;
-  cursor: pointer;
+.eye.l{left:42%}
+.eye.r{right:42%}
+.core{
+  position:absolute;
+  bottom:80px;
+  width:55px;
+  height:55px;
+  background:#ef4444;
+  border-radius:50%;
+  box-shadow:0 0 40px #ef4444;
+  z-index:5;
 }
-
-.boss-face {
-  font-size: 110px;
-  text-align: center;
-  filter: drop-shadow(0 0 25px #ef4444);
+.mission{font-size:16px}
+.work{
+  display:grid;
+  grid-template-columns:1fr 1.45fr;
+  gap:14px;
 }
-
-.boss-hit {
-  animation: bossReact 0.4s ease;
+.editor pre{
+  background:#020617;
+  color:#22c55e;
+  padding:18px;
+  border-radius:12px;
+  min-height:260px;
+  overflow:auto;
 }
-
-.hp-track {
-  height: 14px;
-  background: #1f2937;
-  border-radius: 999px;
-  overflow: hidden;
+.run,.attack{
+  width:100%;
+  padding:15px;
+  border:0;
+  border-radius:10px;
+  background:linear-gradient(135deg,#991b1b,#ef4444);
+  color:white;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 0 25px rgba(239,68,68,.5);
 }
-
-.hp-fill {
-  height: 100%;
-  background: linear-gradient(90deg,#ef4444,#f97316);
-  transition: 0.4s;
+.steps{
+  display:flex;
+  justify-content:space-around;
+  gap:15px;
 }
-
-.status-box {
-  margin-top: 25px;
-  color: #cbd5e1;
+.status h3{
+  display:flex;
+  justify-content:space-between;
 }
-
-.output-box {
-  margin-top: 25px;
-  background: #020617;
-  padding: 16px;
-  border-radius: 14px;
-  color: #22c55e;
+.status span{color:#ef4444}
+.boss-mask{
+  height:180px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:110px;
+  color:#111827;
+  text-shadow:0 0 35px #ef4444;
+  border-radius:14px;
+  background:radial-gradient(circle,rgba(239,68,68,.25),transparent 65%);
 }
-
-.reward-box {
-  margin-top: 20px;
-  background: rgba(88,28,135,0.35);
-  padding: 16px;
-  border-radius: 14px;
+.hp{
+  height:13px;
+  background:#1f2937;
+  border-radius:999px;
+  overflow:hidden;
 }
-
-.danger-text {
-  color: #f87171;
+.hp div{
+  height:100%;
+  background:linear-gradient(90deg,#ef4444,#f97316);
+  transition:.35s;
 }
-
-.blue-text {
-  color: #38bdf8;
+.output{
+  color:#22c55e;
 }
-
-.intro-screen {
-  position: fixed;
-  inset: 0;
-  z-index: 99999;
-  background: radial-gradient(circle, #450a0a, #020617 65%);
-  color: white;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  animation: introFade 0.5s ease;
+.rewards{
+  background:linear-gradient(135deg,rgba(88,28,135,.5),rgba(3,7,18,.9));
 }
-
-.intro-robot {
-  font-size: 130px;
-  filter: drop-shadow(0 0 35px #ef4444);
-  animation: robotFloat 2s ease-in-out infinite;
+.attack{
+  font-size:18px;
 }
-
-.intro-screen h1 {
-  font-size: 44px;
-  color: #ef4444;
-  text-shadow: 0 0 25px #ef4444;
+.hit{
+  animation:hit .45s ease;
 }
-
-.intro-screen p {
-  color: #cbd5e1;
+.shake{
+  animation:shake .35s ease;
 }
-
-.intro-screen button {
-  margin-top: 20px;
-  padding: 14px 28px;
-  border-radius: 14px;
-  border: none;
-  background: linear-gradient(135deg,#dc2626,#f97316);
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
+@keyframes float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-14px)}
 }
-
-.screen-shake {
-  animation: screenShake 0.35s ease;
+@keyframes blink{
+  0%,100%{opacity:.55}
+  50%{opacity:1}
 }
-
-@keyframes robotFloat {
-  0% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-12px) rotate(2deg); }
-  100% { transform: translateY(0px) rotate(0deg); }
+@keyframes hit{
+  0%,100%{transform:translateX(0)}
+  50%{transform:translateX(-12px) scale(1.04)}
 }
-
-@keyframes eyeGlow {
-  0% { opacity: 0.45; box-shadow: 0 0 8px red; }
-  50% { opacity: 1; box-shadow: 0 0 28px red; }
-  100% { opacity: 0.45; box-shadow: 0 0 8px red; }
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-8px)}
+  50%{transform:translateX(8px)}
+  75%{transform:translateX(-5px)}
 }
-
-@keyframes handMove {
-  0% { transform: rotate(0deg); }
-  50% { transform: rotate(-18deg); }
-  100% { transform: rotate(0deg); }
-}
-
-@keyframes robotHit {
-  0% { transform: translateX(0); filter: drop-shadow(0 0 35px #ef4444); }
-  50% { transform: translateX(-10px); filter: drop-shadow(0 0 60px #ffffff); }
-  100% { transform: translateX(0); filter: drop-shadow(0 0 35px #ef4444); }
-}
-
-@keyframes bossReact {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.15) rotate(-5deg); }
-  100% { transform: scale(1); }
-}
-
-@keyframes screenShake {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-8px); }
-  50% { transform: translateX(8px); }
-  75% { transform: translateX(-5px); }
-  100% { transform: translateX(0); }
-}
-
-@keyframes introFade {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@media (max-width: 1000px) {
-  .boss-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .bottom-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .robot-box {
-    position: relative;
-    right: auto;
-    top: auto;
-    margin: 20px auto;
-  }
-
-  .title {
-    font-size: 38px;
-  }
-
-  .boss-title {
-    font-size: 48px;
-  }
+@media(max-width:1100px){
+  .grid{grid-template-columns:1fr}
+  .hero{grid-template-columns:1fr}
+  .work{grid-template-columns:1fr}
+  .navs{display:none}
 }
 `
