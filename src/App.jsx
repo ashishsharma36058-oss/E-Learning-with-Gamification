@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import GamePlay from "./pages/GamePlay";
@@ -12,10 +11,8 @@ export default function App() {
     <BrowserRouter>
       <Routes>
 
-        {/* Landing / Welcome Screen */}
-        <Route path="/" element={<Landing />} />
-
-        {/* Auth Pages */}
+        {/* Login */}
+        <Route path="/" element={<Auth />} />
         <Route path="/login" element={<Auth />} />
         <Route path="/register" element={<Auth />} />
 
