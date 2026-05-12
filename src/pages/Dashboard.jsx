@@ -1,147 +1,231 @@
-import { useEffect, useState } from "react";
-import "./Dashboard.css";
-import { useNavigate } from "react-router-dom";
+import ProfileModal from "../components/ProfileModal"
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import api from "../api/client"
+import useStore from "../store/useStore"
 
 export default function Dashboard() {
-  const navigate = useNavigate();
-  const [user, setUser] = useState({
-    name: "Ashish Sharma",
-    level: 1,
-    xp: 0,
-    nextXp: 300,
+  const navigate = useNavigate()
+  const { user, setUser } = useStore()
+
+  const [stats, setStats] = useState({
     completed: 0,
-    total: 50,
-  });
+    accuracy: 0,
+  })
+
+  const [loading, setLoading] = useState(true)
+  const [openProfile, setOpenProfile] = useState(false)
 
   useEffect(() => {
-    const savedUser = JSON.parse(localStorage.getItem("gamifyUser"));
+    api
+      .get("/progress/me")
+      .then(({ data }) => {
+        setStats(data)
 
-    if (savedUser) {
-      setUser({
-        name: savedUser.name || "Ashish Sharma",
-        level: savedUser.level || 1,
-        xp: savedUser.xp || 0,
-        nextXp: savedUser.nextXp || 300,
-        completed: savedUser.completed || 0,
-        total: savedUser.total || 50,
-      });
-    }
-  }, []);
+        if (data.user) {
+          setUser(data.user)
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false))
+  }, [])
 
-  const xpPercent = Math.min((user.xp / user.nextXp) * 100, 100);
-  const challengePercent = Math.min((user.completed / user.total) * 100, 100);
+  const cards = [
+    {
+      title: "Challenges Solved",
+      value: stats.completed || 0,
+      emoji: "🏆",
+      color: "#8b5cf6",
+    },
+    {
+      title: "Accuracy",
+      value: `${stats.accuracy || 0}%`,
+      emoji: "🎯",
+      color: "#06b6d4",
+    },
+    {
+      title: "Total XP",
+      value: user?.total_xp || 0,
+      emoji: "⚡",
+      color: "#f59e0b",
+    },
+  ]
 
   return (
-    <div className="dash-page">
-      <aside className="dash-sidebar">
-        <div className="brand-box">
-          <div className="brand-icon">G</div>
-          <div>
-            <h2>GAMIFY</h2>
-            <p>Code. Level Up. Win.</p>
-          </div>
+    <div
+      style={{
+        minHeight: "100vh",
+        background:
+          "linear-gradient(to right, #0f172a, #111827, #1e293b)",
+        color: "white",
+        padding: "40px",
+        fontFamily: "sans-serif",
+      }}
+    >
+      <div
+        style={{
+          animation: "fadeIn 1s ease",
+        }}
+      >
+        <h1
+          style={{
+            fontSize: "42px",
+            marginBottom: "10px",
+            fontWeight: "bold",
+          }}
+        >
+          🚀 Gamify Dashboard
+        </h1>
+
+        <p
+          style={{
+            color: "#94a3b8",
+            marginBottom: "40px",
+          }}
+        >
+          Welcome back {user?.username || "Coder"} 👋
+          <button
+  onClick={() => setOpenProfile(true)}
+  style={{
+    marginTop: "15px",
+    padding: "10px 16px",
+    borderRadius: 12,
+    border: "none",
+    background: "#7c3aed",
+    color: "white",
+    fontWeight: "bold",
+    cursor: "pointer"
+  }}
+>
+  👤 Profile
+</button>
+        </p>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns:
+  window.innerWidth < 768
+    ? "1fr"
+    : "repeat(auto-fit,minmax(250px,1fr))",
+            gap: "25px",
+          }}
+        >
+          {cards.map((card, index) => (
+            <div
+              key={index}
+              style={{
+                background: "#1e293b",
+                borderRadius: "20px",
+                padding: "30px",
+                transition: "0.3s",
+                border: `2px solid ${card.color}`,
+                boxShadow: `0 0 20px ${card.color}33`,
+              }}
+            >
+              <div
+                style={{
+                  fontSize: window.innerWidth < 768 ? "32px" : "45px",
+                  marginBottom: "15px",
+                }}
+              >
+                {card.emoji}
+              </div>
+
+              <h2
+                style={{
+                  fontSize: "18px",
+                  color: "#cbd5e1",
+                }}
+              >
+                {card.title}
+              </h2>
+
+              <h1
+                style={{
+                  fontSize: "38px",
+                  marginTop: "10px",
+                }}
+              >
+                {loading ? "..." : card.value}
+              </h1>
+            </div>
+          ))}
         </div>
 
-        <nav>
-          <button onClick={() => navigate("/play")}>⚔️ Challenges</button>
-          <button onClick={() => navigate("/play")}>📚 Courses</button>
-          <button onClick={() => navigate("/rankings")}>🏆 Leaderboard</button>
-          <button onClick={() => navigate("/play")}>🤖 AI Mentor</button>
-          <button onClick={() => navigate("/dashboard")}>👤 Profile</button>
-        </nav>
-      </aside>
+        <div
+          style={{
+            marginTop: "50px",
+            background: "#111827",
+            padding: window.innerWidth < 768 ? "20px" : "30px",
+            borderRadius: "20px",
+          }}
+        >
+          <h2
+            style={{
+              marginBottom: "20px",
+              fontSize: "28px",
+            }}
+          >
+            🎮 Quick Actions
+          </h2>
 
-      <main className="dash-main">
-        <header className="dash-header">
-          <div>
-            <p className="small-title">WELCOME BACK</p>
-            <h1>Future Coder Command Center</h1>
-            <p className="subtitle">
-              Track your real coding progress, complete challenges, and level up.
-            </p>
+          <div
+            style={{
+              display: "flex",
+              gap: "20px",
+              flexWrap: "wrap",
+            }}
+          >
+            <button
+              onClick={() => navigate("/play")}
+              style={buttonStyle}
+            >
+              Play Game
+            </button>
+
+            <button
+              onClick={() => navigate("/leaderboard")}
+              style={buttonStyle}
+            >
+              Leaderboard
+            </button>
           </div>
+        </div>
+      </div>
 
-          <div className="profile-card">
-            <div className="avatar">AS</div>
-            <div>
-              <strong>{user.name}</strong>
-              <span>Level {user.level}</span>
-            </div>
-          </div>
-        </header>
+      <style>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
 
-        <section className="hero-card">
-          <div className="hero-left">
-            <span className="badge">LIVE LEARNING MODE</span>
-            <h2>Today’s Mission</h2>
-            <p>
-              Complete one challenge and increase your XP. Your dashboard shows
-              only real progress from your learning activity.
-            </p>
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
 
-            <div className="hero-actions">
-              <button className="primary-btn">Continue Learning</button>
-              <button className="ghost-btn">Open Challenges</button>
-            </div>
-          </div>
-
-          <div className="mentor-orb">
-            <div className="ring ring1"></div>
-            <div className="ring ring2"></div>
-            <div className="core">AI</div>
-          </div>
-        </section>
-
-        <section className="stats-grid">
-          <div className="stat-card">
-            <p>XP Progress</p>
-            <h2>{user.xp} / {user.nextXp}</h2>
-            <div className="bar">
-              <span style={{ width: `${xpPercent}%` }}></span>
-            </div>
-          </div>
-
-          <div className="stat-card">
-            <p>Current Level</p>
-            <h2>{user.level}</h2>
-            <small>Keep solving challenges</small>
-          </div>
-
-          <div className="stat-card">
-            <p>Challenges Done</p>
-            <h2>{user.completed} / {user.total}</h2>
-            <div className="bar">
-              <span style={{ width: `${challengePercent}%` }}></span>
-            </div>
-          </div>
-
-          <div className="stat-card">
-            <p>Rank Status</p>
-            <h2>{user.completed > 0 ? "Active" : "Beginner"}</h2>
-            <small>Based on real progress</small>
-          </div>
-        </section>
-
-        <section className="content-grid">
-          <div className="panel">
-            <h3>Continue Learning</h3>
-            <p>Resume your last coding topic and finish the next task.</p>
-            <button className="panel-btn">Resume Now</button>
-          </div>
-
-          <div className="panel">
-            <h3>Daily Challenge</h3>
-            <p>Solve today’s coding problem to increase XP.</p>
-            <button className="panel-btn">Start Challenge</button>
-          </div>
-
-          <div className="panel">
-            <h3>AI Mentor</h3>
-            <p>Ask for hints, explanations, and code improvement tips.</p>
-            <button className="panel-btn">Ask Mentor</button>
-          </div>
-        </section>
-      </main>
+        button:hover {
+          transform: scale(1.05);
+        }
+      `}</style>
+      <ProfileModal
+  open={openProfile}
+  onClose={() => setOpenProfile(false)}
+/>
     </div>
-  );
+  )
+}
+
+const buttonStyle = {
+  padding: "15px 25px",
+  border: "none",
+  borderRadius: "12px",
+  background: "#8b5cf6",
+  color: "white",
+  fontSize: "16px",
+  cursor: "pointer",
+  transition: "0.3s",
 }
