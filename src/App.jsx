@@ -5,6 +5,7 @@ import Play from "./pages/Play";
 import GamePlay from "./pages/GamePlay";
 import Leaderboard from "./pages/Leaderboard";
 import BossFight from "./pages/BossFight";
+import Auth from "./pages/Auth";
 
 function Welcome() {
   return (
@@ -152,7 +153,7 @@ function Welcome() {
         <div className="welcome-line"></div>
         <p className="welcome-text">Welcome to Gamify E-Learning</p>
 
-        <Link className="enter-btn" to="/dashboard">
+        <Link className="enter-btn" to="/login">
           Enter Dashboard →
         </Link>
       </div>
@@ -173,6 +174,8 @@ export default function App() {
         <Route path="/rankings" element={<Leaderboard />} />
         <Route path="/boss-fight" element={<BossFight />} />
         <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="/login" element={<Auth />} />
+        <Route path="/register" element={<Auth />} />
       </Routes>
     </BrowserRouter>
   );
