@@ -1,0 +1,259 @@
+.dashboard-page {
+  min-height: 100vh;
+  display: flex;
+  background:
+    radial-gradient(circle at top, rgba(255, 0, 0, 0.25), transparent 35%),
+    linear-gradient(135deg, #050507, #090b13 60%, #120405);
+  color: white;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 240px;
+  padding: 26px;
+  border-right: 1px solid rgba(255, 0, 0, 0.35);
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.brand {
+  color: #ff2d2d;
+  letter-spacing: 3px;
+}
+
+.sidebar p {
+  font-size: 12px;
+  color: #aaa;
+}
+
+.sidebar nav {
+  margin-top: 40px;
+  display: grid;
+  gap: 18px;
+}
+
+.sidebar nav span {
+  padding: 14px;
+  border-radius: 10px;
+  color: #cfd6ff;
+}
+
+.sidebar nav .active {
+  background: rgba(255, 40, 40, 0.18);
+  border: 1px solid #ff3333;
+  color: white;
+}
+
+.dashboard-main {
+  flex: 1;
+  padding: 28px 36px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.topbar p {
+  color: #aaa;
+  margin: 0;
+}
+
+.topbar h2 {
+  margin: 0;
+  font-size: 42px;
+}
+
+.topbar h2 span,
+.topbar h2 {
+  color: #ff3333;
+}
+
+.user-pill {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid rgba(255, 50, 50, 0.4);
+  padding: 10px 16px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.user-pill img {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+}
+
+.user-pill small {
+  display: block;
+  color: #aaa;
+}
+
+.hero-section {
+  position: relative;
+  height: 390px;
+  margin-top: 20px;
+  border: 1px solid rgba(255, 50, 50, 0.35);
+  border-radius: 24px;
+  overflow: hidden;
+  background: radial-gradient(circle at center, rgba(255,0,0,.25), transparent 55%);
+}
+
+.hero-text {
+  position: absolute;
+  left: 40px;
+  top: 45px;
+  z-index: 2;
+}
+
+.hero-text h1 {
+  font-size: 54px;
+  margin: 0;
+  color: #ff3b3b;
+}
+
+.hero-text p {
+  width: 360px;
+  color: #d7d7d7;
+}
+
+.cyborg {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.cyborg img {
+  height: 430px;
+  filter: drop-shadow(0 0 35px red);
+  animation: floatMentor 4s ease-in-out infinite;
+}
+
+.halo {
+  position: absolute;
+  width: 360px;
+  height: 360px;
+  border: 2px solid rgba(255, 40, 40, 0.5);
+  border-radius: 50%;
+  box-shadow: 0 0 60px red;
+  animation: spin 8s linear infinite;
+}
+
+.stats-grid {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.stat-card,
+.panel {
+  background: rgba(8, 8, 14, 0.72);
+  border: 1px solid rgba(255, 50, 50, 0.35);
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 0 25px rgba(255, 0, 0, 0.12);
+}
+
+.stat-card p,
+.panel h3 {
+  color: #ff6b6b;
+  margin-top: 0;
+}
+
+.stat-card h2 {
+  font-size: 34px;
+  margin-bottom: 0;
+}
+
+.bottom-grid {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.progress {
+  height: 8px;
+  background: #222;
+  border-radius: 20px;
+  overflow: hidden;
+  margin: 18px 0;
+}
+
+.progress span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #ff3333, #ff9b3d);
+}
+
+button {
+  border: none;
+  padding: 13px 22px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #961111, #ff3333);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.activity-circle {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 10px solid #ff3333;
+  font-size: 30px;
+  margin: auto;
+}
+
+.dash-loading {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: #050507;
+  color: #ff3333;
+  font-size: 24px;
+}
+
+@keyframes floatMentor {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 900px) {
+  .dashboard-page {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: auto;
+  }
+
+  .stats-grid,
+  .bottom-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-section {
+    height: 520px;
+  }
+
+  .cyborg img {
+    height: 360px;
+    margin-top: 120px;
+  }
+}
