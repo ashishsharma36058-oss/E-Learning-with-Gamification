@@ -1647,7 +1647,7 @@ const demoChallenges = [
   language: "python",
   xp_reward: 500,
   game_mode: "boss",
-  level_req: 10,
+  level_req: 1,
   time_limit: 600,
 },
 
