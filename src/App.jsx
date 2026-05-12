@@ -1,11 +1,12 @@
 import { BrowserRouter, Routes, Route, Navigate, Link } from "react-router-dom";
 
+import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Play from "./pages/Play";
 import GamePlay from "./pages/GamePlay";
 import Leaderboard from "./pages/Leaderboard";
 import BossFight from "./pages/BossFight";
-import Auth from "./pages/Auth";
+
 
 function Welcome() {
   return (
