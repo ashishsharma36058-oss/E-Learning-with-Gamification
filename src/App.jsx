@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import GamePlay from "./pages/GamePlay";
@@ -10,14 +11,20 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Auth />} />
+
+        {/* Landing / Welcome Screen */}
+        <Route path="/" element={<Landing />} />
+
+        {/* Auth Pages */}
         <Route path="/login" element={<Auth />} />
         <Route path="/register" element={<Auth />} />
 
+        {/* Main Pages */}
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/play" element={<Play />} />
         <Route path="/game" element={<GamePlay />} />
         <Route path="/rankings" element={<Leaderboard />} />
+
       </Routes>
     </BrowserRouter>
   );
