@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import "./Dashboard.css";
+import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [user, setUser] = useState({
     name: "Ashish Sharma",
     level: 1,
@@ -41,12 +43,11 @@ export default function Dashboard() {
         </div>
 
         <nav>
-          <button className="active">🏠 Dashboard</button>
-          <button>⚔️ Challenges</button>
-          <button>📚 Courses</button>
-          <button>🏆 Leaderboard</button>
-          <button>🤖 AI Mentor</button>
-          <button>👤 Profile</button>
+          <button onClick={() => navigate("/play")}>⚔️ Challenges</button>
+          <button onClick={() => navigate("/play")}>📚 Courses</button>
+          <button onClick={() => navigate("/rankings")}>🏆 Leaderboard</button>
+          <button onClick={() => navigate("/play")}>🤖 AI Mentor</button>
+          <button onClick={() => navigate("/dashboard")}>👤 Profile</button>
         </nav>
       </aside>
 
