@@ -1634,7 +1634,7 @@ const demoChallenges = [
     starter_code: "// Write your JavaScript solution here\n",
     hints: ["Problem ko chhote steps me break karo.", "JavaScript Inheritance concept ka syntax yaad karo.", "Pehle logic likho, phir code complete karo."],
     test_cases: []
-  }
+  },
   // ==========================
 // PYTHON BOSS CHALLENGES
 // ==========================
