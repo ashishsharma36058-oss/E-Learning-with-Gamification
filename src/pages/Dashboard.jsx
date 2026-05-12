@@ -1,231 +1,134 @@
-import ProfileModal from "../components/ProfileModal"
-import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
-import api from "../api/client"
-import useStore from "../store/useStore"
+import { useEffect, useState } from "react";
+import "./Dashboard.css";
+
+const API = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 export default function Dashboard() {
-  const navigate = useNavigate()
-  const { user, setUser } = useStore()
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const [stats, setStats] = useState({
-    completed: 0,
-    accuracy: 0,
-  })
-
-  const [loading, setLoading] = useState(true)
-  const [openProfile, setOpenProfile] = useState(false)
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    api
-      .get("/progress/me")
-      .then(({ data }) => {
-        setStats(data)
+    async function loadDashboard() {
+      try {
+        const res = await fetch(`${API}/api/v1/dashboard/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-        if (data.user) {
-          setUser(data.user)
-        }
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false))
-  }, [])
+        const result = await res.json();
+        setData(result);
+      } catch (err) {
+        console.error("Dashboard load error:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
 
-  const cards = [
-    {
-      title: "Challenges Solved",
-      value: stats.completed || 0,
-      emoji: "🏆",
-      color: "#8b5cf6",
-    },
-    {
-      title: "Accuracy",
-      value: `${stats.accuracy || 0}%`,
-      emoji: "🎯",
-      color: "#06b6d4",
-    },
-    {
-      title: "Total XP",
-      value: user?.total_xp || 0,
-      emoji: "⚡",
-      color: "#f59e0b",
-    },
-  ]
+    loadDashboard();
+  }, [token]);
+
+  if (loading) {
+    return <div className="dash-loading">Loading real dashboard...</div>;
+  }
+
+  if (!data) {
+    return <div className="dash-loading">Dashboard data not found</div>;
+  }
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background:
-          "linear-gradient(to right, #0f172a, #111827, #1e293b)",
-        color: "white",
-        padding: "40px",
-        fontFamily: "sans-serif",
-      }}
-    >
-      <div
-        style={{
-          animation: "fadeIn 1s ease",
-        }}
-      >
-        <h1
-          style={{
-            fontSize: "42px",
-            marginBottom: "10px",
-            fontWeight: "bold",
-          }}
-        >
-          🚀 Gamify Dashboard
-        </h1>
+    <div className="dashboard-page">
+      <aside className="sidebar">
+        <h1 className="brand">GAMIFY</h1>
+        <p>E-LEARNING</p>
 
-        <p
-          style={{
-            color: "#94a3b8",
-            marginBottom: "40px",
-          }}
-        >
-          Welcome back {user?.username || "Coder"} 👋
-          <button
-  onClick={() => setOpenProfile(true)}
-  style={{
-    marginTop: "15px",
-    padding: "10px 16px",
-    borderRadius: 12,
-    border: "none",
-    background: "#7c3aed",
-    color: "white",
-    fontWeight: "bold",
-    cursor: "pointer"
-  }}
->
-  👤 Profile
-</button>
-        </p>
+        <nav>
+          <span className="active">🏠 Dashboard</span>
+          <span>📚 Courses</span>
+          <span>⚔️ Challenges</span>
+          <span>🏆 Leaderboard</span>
+          <span>🤖 AI Mentor</span>
+          <span>👤 Profile</span>
+        </nav>
+      </aside>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns:
-  window.innerWidth < 768
-    ? "1fr"
-    : "repeat(auto-fit,minmax(250px,1fr))",
-            gap: "25px",
-          }}
-        >
-          {cards.map((card, index) => (
-            <div
-              key={index}
-              style={{
-                background: "#1e293b",
-                borderRadius: "20px",
-                padding: "30px",
-                transition: "0.3s",
-                border: `2px solid ${card.color}`,
-                boxShadow: `0 0 20px ${card.color}33`,
-              }}
-            >
-              <div
-                style={{
-                  fontSize: window.innerWidth < 768 ? "32px" : "45px",
-                  marginBottom: "15px",
-                }}
-              >
-                {card.emoji}
-              </div>
-
-              <h2
-                style={{
-                  fontSize: "18px",
-                  color: "#cbd5e1",
-                }}
-              >
-                {card.title}
-              </h2>
-
-              <h1
-                style={{
-                  fontSize: "38px",
-                  marginTop: "10px",
-                }}
-              >
-                {loading ? "..." : card.value}
-              </h1>
-            </div>
-          ))}
-        </div>
-
-        <div
-          style={{
-            marginTop: "50px",
-            background: "#111827",
-            padding: window.innerWidth < 768 ? "20px" : "30px",
-            borderRadius: "20px",
-          }}
-        >
-          <h2
-            style={{
-              marginBottom: "20px",
-              fontSize: "28px",
-            }}
-          >
-            🎮 Quick Actions
-          </h2>
-
-          <div
-            style={{
-              display: "flex",
-              gap: "20px",
-              flexWrap: "wrap",
-            }}
-          >
-            <button
-              onClick={() => navigate("/play")}
-              style={buttonStyle}
-            >
-              Play Game
-            </button>
-
-            <button
-              onClick={() => navigate("/leaderboard")}
-              style={buttonStyle}
-            >
-              Leaderboard
-            </button>
+      <main className="dashboard-main">
+        <header className="topbar">
+          <div>
+            <p>WELCOME BACK,</p>
+            <h2>FUTURE CODER</h2>
           </div>
-        </div>
-      </div>
 
-      <style>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
+          <div className="user-pill">
+            <img src={data.user.avatar || "/avatar.png"} alt="avatar" />
+            <div>
+              <b>{data.user.name}</b>
+              <small>Level {data.user.level}</small>
+            </div>
+          </div>
+        </header>
 
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
+        <section className="hero-section">
+          <div className="hero-text">
+            <h1>{data.boss?.title || "AI Mentor Challenge"}</h1>
+            <p>{data.boss?.description || "Complete real challenges to level up."}</p>
+          </div>
 
-        button:hover {
-          transform: scale(1.05);
-        }
-      `}</style>
-      <ProfileModal
-  open={openProfile}
-  onClose={() => setOpenProfile(false)}
-/>
+          <div className="cyborg">
+            <div className="halo"></div>
+            <img src="/mentor-cyborg.png" alt="AI Mentor" />
+          </div>
+        </section>
+
+        <section className="stats-grid">
+          <Card title="XP Progress" value={`${data.stats.xp} / ${data.stats.nextLevelXp}`} />
+          <Card title="Level" value={data.user.level} />
+          <Card title="Challenges Completed" value={`${data.stats.completedChallenges} / ${data.stats.totalChallenges}`} />
+          <Card title="Rank" value={data.stats.rank || "Not ranked"} />
+        </section>
+
+        <section className="bottom-grid">
+          <div className="panel">
+            <h3>Continue Learning</h3>
+            <p>{data.currentCourse?.title || "No course started"}</p>
+            <div className="progress">
+              <span style={{ width: `${data.currentCourse?.progress || 0}%` }}></span>
+            </div>
+            <button>Resume Now</button>
+          </div>
+
+          <div className="panel">
+            <h3>Daily Challenge</h3>
+            <p>{data.dailyChallenge?.title || "No daily challenge"}</p>
+            <button>Start Challenge</button>
+          </div>
+
+          <div className="panel">
+            <h3>Leaderboard</h3>
+            {data.leaderboard?.slice(0, 3).map((u, i) => (
+              <p key={u.id}>
+                {i + 1}. {u.name} — {u.xp} XP
+              </p>
+            ))}
+          </div>
+
+          <div className="panel">
+            <h3>Your Activity</h3>
+            <div className="activity-circle">{data.stats.activityPercent}%</div>
+          </div>
+        </section>
+      </main>
     </div>
-  )
+  );
 }
 
-const buttonStyle = {
-  padding: "15px 25px",
-  border: "none",
-  borderRadius: "12px",
-  background: "#8b5cf6",
-  color: "white",
-  fontSize: "16px",
-  cursor: "pointer",
-  transition: "0.3s",
+function Card({ title, value }) {
+  return (
+    <div className="stat-card">
+      <p>{title}</p>
+      <h2>{value}</h2>
+    </div>
+  );
 }
