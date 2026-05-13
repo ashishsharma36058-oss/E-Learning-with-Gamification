@@ -33,13 +33,13 @@ export default function Dashboard() {
   const cards = [
     {
       title: "Challenges Solved",
-      value: stats.completed || 0,
+      value: user?.completed_challenges || stats.completed || 0,
       emoji: "🏆",
       color: "#8b5cf6",
     },
     {
       title: "Accuracy",
-      value: `${stats.accuracy || 0}%`,
+      value: `${user?.completed_challenges > 0 ? 100 : 0}%`,
       emoji: "🎯",
       color: "#06b6d4",
     },
