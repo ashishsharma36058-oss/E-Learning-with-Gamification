@@ -262,19 +262,35 @@ const speakPraise = () => {
         toast.error(data.message || 'Try again')
       }
     } catch {
-  const out = getOutput()
+  const userOut = String(getOutput()).trim()
 
-  setResult({
-    passed: true,
-    message: out,
-    xp_earned: ch.xp_reward
-  })
+  const solutionCode = ch.solution || ""
+  const solutionOut = String(
+    eval(
+      solutionCode.match(/print\((.*?)\)/)?.[1]
+    )
+  ).trim()
 
-  setXpFloat(`+${ch.xp_reward} XP`)
-  setTimeout(() => setXpFloat(null), 2500)
+  const correct = userOut === solutionOut
 
-  addXP(ch.xp_reward)
-  speakPraise()
+  if (correct) {
+    setResult({
+      passed: true,
+      message: userOut,
+      xp_earned: ch.xp_reward
+    })
+
+    addXP(ch.xp_reward)
+    speakPraise()
+  } else {
+    setResult({
+      passed: false,
+      message: "Wrong Output ❌",
+      xp_earned: 0
+    })
+
+    toast.error("Wrong Output ❌")
+  }
 } finally {
       setSubmitting(false)
     }
