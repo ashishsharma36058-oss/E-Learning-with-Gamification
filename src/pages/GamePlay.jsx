@@ -41,20 +41,35 @@ export default function GamePlay() {
   const startTime = useRef(Date.now())
   const timerRef = useRef(null)
 
-  const runCodeOutput = (sourceCode) => {
+  const runCodeOutput = (sourceCode = '') => {
     try {
-      let vars = {}
+      const vars = {}
+      const lines = sourceCode.split('\n')
 
-      sourceCode.split('\n').forEach((line) => {
-        line = line.trim()
+      lines.forEach((rawLine) => {
+        const line = rawLine.trim()
+
+        if (!line || line.startsWith('#')) return
 
         if (line.includes('=') && !line.startsWith('print')) {
-          const [key, value] = line.split('=')
-          vars[key.trim()] = Number(value.trim())
+          const [key, ...rest] = line.split('=')
+          const value = rest.join('=').trim()
+          const cleanKey = key.trim()
+
+          if (
+            (value.startsWith('"') && value.endsWith('"')) ||
+            (value.startsWith("'") && value.endsWith("'"))
+          ) {
+            vars[cleanKey] = value.slice(1, -1)
+          } else if (!Number.isNaN(Number(value))) {
+            vars[cleanKey] = Number(value)
+          } else {
+            vars[cleanKey] = value
+          }
         }
       })
 
-      const printMatch = sourceCode.match(/print\((.*?)\)/)
+      const printMatch = sourceCode.match(/print\((.*?)\)/s)
 
       if (!printMatch) return 'No print statement found'
 
@@ -64,12 +79,15 @@ export default function GamePlay() {
         (expr.startsWith('"') && expr.endsWith('"')) ||
         (expr.startsWith("'") && expr.endsWith("'"))
       ) {
-        return expr.replace(/['"]/g, '')
+        return expr.slice(1, -1)
       }
 
-      Object.keys(vars).forEach((v) => {
-        expr = expr.replaceAll(v, vars[v])
-      })
+      Object.keys(vars)
+        .sort((a, b) => b.length - a.length)
+        .forEach((v) => {
+          const value = typeof vars[v] === 'string' ? `"${vars[v]}"` : vars[v]
+          expr = expr.replaceAll(v, value)
+        })
 
       return String(eval(expr))
     } catch {
@@ -89,7 +107,6 @@ export default function GamePlay() {
     window.speechSynthesis.cancel()
 
     const speech = new SpeechSynthesisUtterance(praise)
-
     speech.lang = 'en-IN'
     speech.rate = 0.9
     speech.pitch = 1.3
@@ -103,9 +120,7 @@ export default function GamePlay() {
       voices.find((v) => v.name.toLowerCase().includes('zira')) ||
       voices.find((v) => v.name.toLowerCase().includes('google'))
 
-    if (indianVoice) {
-      speech.voice = indianVoice
-    }
+    if (indianVoice) speech.voice = indianVoice
 
     setTimeout(() => {
       window.speechSynthesis.speak(speech)
@@ -127,6 +142,7 @@ export default function GamePlay() {
         xp_reward: demoChallenge.xp_reward || 100,
         starter_code: demoChallenge.starter_code || '',
         solution: demoChallenge.solution || '',
+        expected_output: demoChallenge.expected_output || '',
         test_cases: demoChallenge.test_cases || [],
         hints: demoChallenge.hints || [],
         time_limit: demoChallenge.time_limit || 120
@@ -154,6 +170,7 @@ export default function GamePlay() {
           xp_reward: data.xp_reward || 100,
           starter_code: data.starter_code || '',
           solution: data.solution || '',
+          expected_output: data.expected_output || '',
           test_cases: data.test_cases || [],
           hints: data.hints || [],
           time_limit: data.time_limit || 120
@@ -229,6 +246,46 @@ export default function GamePlay() {
     setAiHint('Hint: Problem ko step by step solve karo.')
   }
 
+  const checkLocalAnswer = () => {
+    const userOut = String(runCodeOutput(code)).trim()
+
+    let expectedOut = ''
+
+    if (ch?.expected_output) {
+      expectedOut = String(ch.expected_output).trim()
+    } else if (ch?.solution && ch.solution.includes('print(')) {
+      expectedOut = String(runCodeOutput(ch.solution)).trim()
+    }
+
+    const validUserOutput =
+      userOut !== 'Output error' &&
+      userOut !== 'No print statement found' &&
+      userOut !== ''
+
+    const hasExpected =
+      expectedOut &&
+      expectedOut !== 'Output error' &&
+      expectedOut !== 'No print statement found'
+
+    const correct = hasExpected ? userOut === expectedOut : validUserOutput
+
+    return { correct, userOut, expectedOut }
+  }
+
+  const completeChallenge = (xp, message) => {
+    setResult({
+      passed: true,
+      message,
+      xp_earned: xp
+    })
+
+    setXpFloat(`+${xp} XP`)
+    setTimeout(() => setXpFloat(null), 2500)
+
+    addXP(xp)
+    speakPraise()
+  }
+
   const submit = async () => {
     if (!ch || submitting || timeLeft === 0) return
 
@@ -245,48 +302,36 @@ export default function GamePlay() {
         hints_used: hintsUsed
       })
 
-      setResult(data)
-
-      if (data.passed) {
-        setXpFloat(`+${data.xp_earned} XP`)
-        setTimeout(() => setXpFloat(null), 2500)
-
-        addXP(data.xp_earned)
-        speakPraise()
+      if (data?.passed) {
+        completeChallenge(data.xp_earned || ch.xp_reward, data.message || getOutput())
 
         if (data.level_up) {
           setTimeout(() => setLevelUp(data.new_level), 600)
         }
       } else {
-        toast.error(data.message || 'Try again')
+        const local = checkLocalAnswer()
+
+        if (local.correct) {
+          completeChallenge(ch.xp_reward, local.userOut)
+        } else {
+          setResult({
+            passed: false,
+            message: data?.message || `Wrong Output ❌ Expected: ${local.expectedOut || 'valid output'}, Got: ${local.userOut}`,
+            xp_earned: 0
+          })
+
+          toast.error('Wrong Output ❌')
+        }
       }
     } catch {
-      const userOut = String(runCodeOutput(code)).trim()
-      const solutionOut = String(
-  runCodeOutput(ch.solution || ch.starter_code || code)
-).trim()
+      const local = checkLocalAnswer()
 
-      const correct =
-  userOut !== 'Output error' &&
-  userOut !== 'No print statement found' &&
-  userOut === solutionOut
-
-      if (correct) {
-        setResult({
-          passed: true,
-          message: userOut,
-          xp_earned: ch.xp_reward
-        })
-
-        setXpFloat(`+${ch.xp_reward} XP`)
-        setTimeout(() => setXpFloat(null), 2500)
-
-        addXP(ch.xp_reward)
-        speakPraise()
+      if (local.correct) {
+        completeChallenge(ch.xp_reward, local.userOut)
       } else {
         setResult({
           passed: false,
-          message: `Wrong Output ❌ Expected: ${solutionOut}, Got: ${userOut}`,
+          message: `Wrong Output ❌ Expected: ${local.expectedOut || 'valid output'}, Got: ${local.userOut}`,
           xp_earned: 0
         })
 
@@ -344,9 +389,7 @@ export default function GamePlay() {
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ fontSize: 15, fontWeight: 700 }}>{ch.title}</span>
-
             <span className={`pill pill-${ch.difficulty}`}>{ch.difficulty}</span>
-
             <span className="mode-badge">
               {MODE_ICONS[ch.game_mode] || '🎮'} {ch.game_mode}
             </span>
