@@ -21,6 +21,42 @@ const LANG_MAP = {
   java: 'java'
 }
 
+const getExpectedFromTitle = (challenge) => {
+  const title = String(challenge?.title || '').toLowerCase()
+
+  if (title.includes('hello world')) return 'Hello World'
+  if (title.includes('sum two numbers')) return '8'
+
+  return ''
+}
+
+const buildSafeChallenge = (data = {}) => ({
+  ...data,
+  title: data.title || 'Challenge',
+  description: data.description || 'Solve this challenge.',
+  difficulty: data.difficulty || 'easy',
+  language: data.language || 'python',
+  game_mode: data.game_mode || 'puzzle',
+  xp_reward: data.xp_reward || data.xp || 100,
+  starter_code: data.starter_code || data.starterCode || '',
+  solution:
+    data.solution ||
+    data.correct_code ||
+    data.correctCode ||
+    data.answer_code ||
+    '',
+  expected_output:
+    data.expected_output ||
+    data.expectedOutput ||
+    data.output ||
+    data.answer ||
+    data.expected ||
+    getExpectedFromTitle(data),
+  test_cases: data.test_cases || data.testCases || [],
+  hints: data.hints || [],
+  time_limit: data.time_limit || data.timeLimit || 120
+})
+
 export default function GamePlay() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -45,6 +81,7 @@ export default function GamePlay() {
     try {
       const vars = {}
       const lines = sourceCode.split('\n')
+      const outputs = []
 
       lines.forEach((rawLine) => {
         const line = rawLine.trim()
@@ -67,29 +104,39 @@ export default function GamePlay() {
             vars[cleanKey] = value
           }
         }
+
+        const printMatch = line.match(/^print\((.*?)\)$/s)
+
+        if (printMatch) {
+          let expr = printMatch[1].trim()
+
+          if (!expr) {
+            outputs.push('')
+            return
+          }
+
+          if (
+            (expr.startsWith('"') && expr.endsWith('"')) ||
+            (expr.startsWith("'") && expr.endsWith("'"))
+          ) {
+            outputs.push(expr.slice(1, -1))
+            return
+          }
+
+          Object.keys(vars)
+            .sort((a, b) => b.length - a.length)
+            .forEach((v) => {
+              const value = typeof vars[v] === 'string' ? `"${vars[v]}"` : vars[v]
+              expr = expr.replace(new RegExp(`\\b${v}\\b`, 'g'), value)
+            })
+
+          outputs.push(String(eval(expr)))
+        }
       })
 
-      const printMatch = sourceCode.match(/print\((.*?)\)/s)
+      if (outputs.length === 0) return 'No print statement found'
 
-      if (!printMatch) return 'No print statement found'
-
-      let expr = printMatch[1].trim()
-
-      if (
-        (expr.startsWith('"') && expr.endsWith('"')) ||
-        (expr.startsWith("'") && expr.endsWith("'"))
-      ) {
-        return expr.slice(1, -1)
-      }
-
-      Object.keys(vars)
-        .sort((a, b) => b.length - a.length)
-        .forEach((v) => {
-          const value = typeof vars[v] === 'string' ? `"${vars[v]}"` : vars[v]
-          expr = expr.replaceAll(v, value)
-        })
-
-      return String(eval(expr))
+      return outputs.join('\n').trim()
     } catch {
       return 'Output error'
     }
@@ -132,25 +179,12 @@ export default function GamePlay() {
     const demoChallenge = location.state?.challenge || savedChallenge
 
     if (demoChallenge) {
-      const safeChallenge = {
-        ...demoChallenge,
-        title: demoChallenge.title || 'Challenge',
-        description: demoChallenge.description || 'Solve this challenge.',
-        difficulty: demoChallenge.difficulty || 'easy',
-        language: demoChallenge.language || 'javascript',
-        game_mode: demoChallenge.game_mode || 'puzzle',
-        xp_reward: demoChallenge.xp_reward || 100,
-        starter_code: demoChallenge.starter_code || '',
-        solution: demoChallenge.solution || '',
-        expected_output: demoChallenge.expected_output || '',
-        test_cases: demoChallenge.test_cases || [],
-        hints: demoChallenge.hints || [],
-        time_limit: demoChallenge.time_limit || 120
-      }
+      const safeChallenge = buildSafeChallenge(demoChallenge)
 
       setCh(safeChallenge)
       setCode(safeChallenge.starter_code)
       setTimeLeft(safeChallenge.time_limit)
+      setResult(null)
       startTime.current = Date.now()
       return
     }
@@ -159,26 +193,12 @@ export default function GamePlay() {
       .get(`/challenges/${id}`)
       .then((r) => {
         const data = r.data || {}
-
-        const safeChallenge = {
-          ...data,
-          title: data.title || 'Challenge',
-          description: data.description || 'Solve this challenge.',
-          difficulty: data.difficulty || 'easy',
-          language: data.language || 'javascript',
-          game_mode: data.game_mode || 'puzzle',
-          xp_reward: data.xp_reward || 100,
-          starter_code: data.starter_code || '',
-          solution: data.solution || '',
-          expected_output: data.expected_output || '',
-          test_cases: data.test_cases || [],
-          hints: data.hints || [],
-          time_limit: data.time_limit || 120
-        }
+        const safeChallenge = buildSafeChallenge(data)
 
         setCh(safeChallenge)
         setCode(safeChallenge.starter_code)
         setTimeLeft(safeChallenge.time_limit)
+        setResult(null)
         startTime.current = Date.now()
       })
       .catch(() => {
@@ -247,30 +267,24 @@ export default function GamePlay() {
   }
 
   const checkLocalAnswer = () => {
-  const userOut = String(runCodeOutput(code)).trim()
+    const userOut = String(runCodeOutput(code)).trim()
 
-  let expectedOut = ''
+    let expectedOut = String(ch?.expected_output || '').trim()
 
-  if (ch?.expected_output && String(ch.expected_output).trim() !== '') {
-    expectedOut = String(ch.expected_output).trim()
-  } else if (ch?.solution && String(ch.solution).trim() !== '') {
-    expectedOut = String(runCodeOutput(ch.solution)).trim()
+    if (!expectedOut && ch?.solution) {
+      expectedOut = String(runCodeOutput(ch.solution)).trim()
+    }
+
+    const invalidOutputs = ['Output error', 'No print statement found', 'undefined', '']
+
+    const correct =
+      expectedOut !== '' &&
+      !invalidOutputs.includes(userOut) &&
+      !invalidOutputs.includes(expectedOut) &&
+      userOut === expectedOut
+
+    return { correct, userOut, expectedOut }
   }
-
-  const invalidOutputs = [
-    'Output error',
-    'No print statement found',
-    'undefined'
-  ]
-
-  const correct =
-    expectedOut !== '' &&
-    !invalidOutputs.includes(userOut) &&
-    !invalidOutputs.includes(expectedOut) &&
-    userOut === expectedOut
-
-  return { correct, userOut, expectedOut }
-}
 
   const completeChallenge = (xp, message) => {
     setResult({
@@ -287,31 +301,30 @@ export default function GamePlay() {
   }
 
   const submit = async () => {
-  if (!ch || submitting || timeLeft === 0) return
+    if (!ch || submitting || timeLeft === 0) return
 
-  setSubmitting(true)
-  clearInterval(timerRef.current)
+    setSubmitting(true)
+    clearInterval(timerRef.current)
 
-  try {
-    const local = checkLocalAnswer()
+    try {
+      const local = checkLocalAnswer()
 
-    if (!local.correct) {
-      setResult({
-        passed: false,
-        message: `Wrong Output ❌ Expected: ${local.expectedOut || 'valid output'}, Got: ${local.userOut || 'No Output'}`,
-        xp_earned: 0
-      })
+      if (!local.correct) {
+        setResult({
+          passed: false,
+          message: `Wrong Output ❌ Expected: ${local.expectedOut || 'challenge answer'}, Got: ${local.userOut || 'No Output'}`,
+          xp_earned: 0
+        })
 
-      toast.error('Wrong Output ❌')
-      return
+        toast.error('Wrong Output ❌')
+        return
+      }
+
+      completeChallenge(ch.xp_reward, local.userOut)
+    } finally {
+      setSubmitting(false)
     }
-
-    completeChallenge(ch.xp_reward, local.userOut)
-
-  } finally {
-    setSubmitting(false)
   }
-}
 
   if (!ch) {
     return (
