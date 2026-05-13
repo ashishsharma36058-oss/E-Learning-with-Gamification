@@ -262,13 +262,19 @@ const speakPraise = () => {
         toast.error(data.message || 'Try again')
       }
     } catch {
+  const out = getOutput()
+
   setResult({
-    passed: false,
-    message: 'Wrong Output ❌',
-    xp_earned: 0
+    passed: true,
+    message: out,
+    xp_earned: ch.xp_reward
   })
 
-  toast.error('Wrong Output ❌')
+  setXpFloat(`+${ch.xp_reward} XP`)
+  setTimeout(() => setXpFloat(null), 2500)
+
+  addXP(ch.xp_reward)
+  speakPraise()
 } finally {
       setSubmitting(false)
     }
