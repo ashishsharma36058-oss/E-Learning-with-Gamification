@@ -29,6 +29,7 @@ export default function GamePlay() {
 
   const [ch, setCh] = useState(null)
   const [code, setCode] = useState('')
+  const [output, setOutput] = useState("")
   const [timeLeft, setTimeLeft] = useState(120)
   const [hintsUsed, setHintsUsed] = useState(0)
   const [submitting, setSubmitting] = useState(false)
@@ -434,6 +435,28 @@ const speakPraise = () => {
                       }}
                     >
                       {result.message}
+                      <div
+  style={{
+    marginTop: 16,
+    background: "#111",
+    border: "1px solid #333",
+    borderRadius: 10,
+    padding: 12,
+    color: "#00ff99",
+    fontFamily: "monospace",
+    minHeight: 80
+  }}
+>
+  <div style={{ color: "white", marginBottom: 8 }}>
+    Output
+  </div>
+
+  <pre>
+    {code.includes("print")
+      ? code.match(/print\((.*?)\)/)?.[1]?.replace(/['"]/g, "")
+      : "Run code to see output"}
+  </pre>
+</div>
                     </div>
 
                     {result.passed && (
