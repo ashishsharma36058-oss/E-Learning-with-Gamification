@@ -25,7 +25,7 @@ const getExpectedFromTitle = (challenge) => {
   const title = String(challenge?.title || '').toLowerCase()
 
   if (title.includes('hello world')) return 'Hello World'
-  if (title.includes('sum two numbers')) return '8'
+  
 
   return ''
 }
@@ -267,24 +267,39 @@ export default function GamePlay() {
   }
 
   const checkLocalAnswer = () => {
-    const userOut = String(runCodeOutput(code)).trim()
+  const userOut = String(runCodeOutput(code)).trim()
+  const title = String(ch?.title || '').toLowerCase()
 
-    let expectedOut = String(ch?.expected_output || '').trim()
+  let expectedOut = String(ch?.expected_output || '').trim()
 
-    if (!expectedOut && ch?.solution) {
-      expectedOut = String(runCodeOutput(ch.solution)).trim()
+  if (title.includes('sum two numbers')) {
+    const aMatch = code.match(/\ba\s*=\s*(-?\d+)/)
+    const bMatch = code.match(/\bb\s*=\s*(-?\d+)/)
+
+    if (aMatch && bMatch) {
+      expectedOut = String(Number(aMatch[1]) + Number(bMatch[1]))
     }
-
-    const invalidOutputs = ['Output error', 'No print statement found', 'undefined', '']
-
-    const correct =
-      expectedOut !== '' &&
-      !invalidOutputs.includes(userOut) &&
-      !invalidOutputs.includes(expectedOut) &&
-      userOut === expectedOut
-
-    return { correct, userOut, expectedOut }
   }
+
+  if (!expectedOut && ch?.solution) {
+    expectedOut = String(runCodeOutput(ch.solution)).trim()
+  }
+
+  const invalidOutputs = [
+    'Output error',
+    'No print statement found',
+    'undefined',
+    ''
+  ]
+
+  const correct =
+    expectedOut !== '' &&
+    !invalidOutputs.includes(userOut) &&
+    !invalidOutputs.includes(expectedOut) &&
+    userOut === expectedOut
+
+  return { correct, userOut, expectedOut }
+}
 
   const completeChallenge = (xp, message) => {
     setResult({
