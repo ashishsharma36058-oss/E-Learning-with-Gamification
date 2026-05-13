@@ -45,7 +45,10 @@ export default function GamePlay() {
       expr = expr.replaceAll(v, vars[v])
     })
 
-    return eval(expr)
+    if (expr.includes('"') || expr.includes("'")) {
+  return expr.replace(/['"]/g, "")
+}
+    return String(eval(expr))
   } catch (err) {
     return "Output error: check your code"
   }
