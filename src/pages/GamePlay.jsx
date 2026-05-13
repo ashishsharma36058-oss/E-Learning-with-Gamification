@@ -478,16 +478,13 @@ const speakPraise = () => {
     minHeight: 80
   }}
 >
-  <pre>{getOutput()}</pre>                      
+                        
   <div style={{ color: "white", marginBottom: 8 }}>
     Output
   </div>
+  <pre>{getOutput()}</pre>                     
 
-  <pre>
-    {code.includes("print")
-      ? code.match(/print\((.*?)\)/)?.[1]?.replace(/['"]/g, "")
-      : "Run code to see output"}
-  </pre>
+
 </div>
                     </div>
 
