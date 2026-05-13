@@ -262,9 +262,14 @@ export default function GamePlay() {
       }
     } catch {
       const userOut = String(runCodeOutput(code)).trim()
-      const solutionOut = String(runCodeOutput(ch.solution || '')).trim()
+      const solutionOut = String(
+  runCodeOutput(ch.solution || ch.starter_code || code)
+).trim()
 
-      const correct = userOut === solutionOut && userOut !== 'Output error'
+      const correct =
+  userOut !== 'Output error' &&
+  userOut !== 'No print statement found' &&
+  userOut === solutionOut
 
       if (correct) {
         setResult({
