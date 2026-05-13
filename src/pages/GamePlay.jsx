@@ -22,6 +22,34 @@ const LANG_MAP = {
 }
 
 export default function GamePlay() {
+  const getOutput = () => {
+  try {
+    let vars = {}
+
+    code.split("\n").forEach((line) => {
+      line = line.trim()
+
+      if (line.includes("=") && !line.startsWith("print")) {
+        const [key, value] = line.split("=")
+        vars[key.trim()] = Number(value.trim())
+      }
+    })
+
+    const printMatch = code.match(/print\((.*?)\)/)
+
+    if (!printMatch) return "No print statement found"
+
+    let expr = printMatch[1]
+
+    Object.keys(vars).forEach((v) => {
+      expr = expr.replaceAll(v, vars[v])
+    })
+
+    return eval(expr)
+  } catch (err) {
+    return "Output error: check your code"
+  }
+}
   const { id } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
@@ -451,7 +479,7 @@ const speakPraise = () => {
     Output
   </div>
 
-  <pre>
+  <pre>{getOutput()}</pre>
     {code.includes("print")
       ? code.match(/print\((.*?)\)/)?.[1]?.replace(/['"]/g, "")
       : "Run code to see output"}
