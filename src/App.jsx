@@ -12,22 +12,24 @@ import Leaderboard from './pages/Leaderboard'
 import { LoginPage, RegisterPage } from './pages/Auth'
 
 export default function App() {
-  const { fetchMe, isLoggedIn } = useStore()
+  const store = useStore()
+
+  const fetchMe = store?.fetchMe || (() => {})
 
   const isLoggedIn =
-  !!localStorage.getItem('g_access') ||
-  !!localStorage.getItem('token') ||
-  !!localStorage.getItem('user')
+    !!localStorage.getItem('g_access') ||
+    !!localStorage.getItem('token') ||
+    !!localStorage.getItem('user')
 
-useEffect(() => {
-  if (
-    localStorage.getItem('g_access') ||
-    localStorage.getItem('token') ||
-    localStorage.getItem('user')
-  ) {
-    fetchMe()
-  }
-}, [])
+  useEffect(() => {
+    if (isLoggedIn) {
+      try {
+        fetchMe()
+      } catch (e) {
+        console.log('fetchMe skipped')
+      }
+    }
+  }, [])
 
   return (
     <BrowserRouter>
@@ -40,31 +42,104 @@ useEffect(() => {
             border: '1px solid var(--border-bright)',
             fontFamily: "'Space Grotesk', sans-serif",
             fontSize: 13,
-            borderRadius: 10,
+            borderRadius: 10
           },
-          success: { iconTheme: { primary: '#10b981', secondary: '#052e16' } },
-          error:   { iconTheme: { primary: '#ef4444', secondary: '#1a0505' } },
+          success: {
+            iconTheme: {
+              primary: '#10b981',
+              secondary: '#052e16'
+            }
+          },
+          error: {
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#1a0505'
+            }
+          }
         }}
       />
-      <Routes>
-        {/* Auth — no navbar */}
-        <Route path="/login"    element={isLoggedIn ? <Navigate to="/dashboard" /> : <LoginPage />} />
-        <Route path="/register" element={isLoggedIn ? <Navigate to="/dashboard" /> : <RegisterPage />} />
 
-        {/* Main app — with navbar */}
-        <Route path="/*" element={
-          <>
-            <Navbar />
-            <Routes>
-              <Route path="/"            element={isLoggedIn ? <Navigate to="/dashboard" /> : <Landing />} />
-              <Route path="/dashboard"   element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-              <Route path="/play"        element={<ProtectedRoute><Play /></ProtectedRoute>} />
-              <Route path="/play/:id"    element={<ProtectedRoute><GamePlay /></ProtectedRoute>} />
-              <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
-              <Route path="*"            element={<Navigate to="/" />} />
-            </Routes>
-          </>
-        } />
+      <Routes>
+        {/* Auth Pages */}
+        <Route
+          path="/login"
+          element={
+            isLoggedIn
+              ? <Navigate to="/dashboard" replace />
+              : <LoginPage />
+          }
+        />
+
+        <Route
+          path="/register"
+          element={
+            isLoggedIn
+              ? <Navigate to="/dashboard" replace />
+              : <RegisterPage />
+          }
+        />
+
+        {/* Main App */}
+        <Route
+          path="/*"
+          element={
+            <>
+              <Navbar />
+
+              <Routes>
+                <Route
+                  path="/"
+                  element={
+                    isLoggedIn
+                      ? <Navigate to="/dashboard" replace />
+                      : <Landing />
+                  }
+                />
+
+                <Route
+                  path="/dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/play"
+                  element={
+                    <ProtectedRoute>
+                      <Play />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/play/:id"
+                  element={
+                    <ProtectedRoute>
+                      <GamePlay />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/leaderboard"
+                  element={
+                    <ProtectedRoute>
+                      <Leaderboard />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="*"
+                  element={<Navigate to="/" replace />}
+                />
+              </Routes>
+            </>
+          }
+        />
       </Routes>
     </BrowserRouter>
   )
