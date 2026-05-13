@@ -61,7 +61,7 @@ export default function GamePlay() {
   const { id } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
-  const { addXP } = useStore()
+  const { addXP, markChallengeSolved } = useStore()
 
   const [ch, setCh] = useState(null)
   const [code, setCode] = useState('')
@@ -338,6 +338,7 @@ export default function GamePlay() {
     setTimeout(() => setXpFloat(null), 2500)
 
     addXP(xp)
+    markChallengeSolved(ch.id || id)
     speakPraise()
   }
 
