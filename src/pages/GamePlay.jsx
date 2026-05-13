@@ -462,7 +462,7 @@ const speakPraise = () => {
                         lineHeight: 1.6
                       }}
                     >
-                      {result.message}
+                      <pre>{getOutput()}</pre>
                       <div
   style={{
     marginTop: 16,
@@ -479,7 +479,7 @@ const speakPraise = () => {
     Output
   </div>
 
-  <pre>{getOutput()}</pre>
+  <pre>
     {code.includes("print")
       ? code.match(/print\((.*?)\)/)?.[1]?.replace(/['"]/g, "")
       : "Run code to see output"}
