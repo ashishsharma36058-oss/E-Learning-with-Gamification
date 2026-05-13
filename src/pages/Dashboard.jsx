@@ -6,46 +6,83 @@ import useStore from "../store/useStore"
 
 export default function Dashboard() {
   const navigate = useNavigate()
-  const { user, setUser } = useStore()
+  const store = useStore()
+
+  const user =
+    store?.user ||
+    JSON.parse(localStorage.getItem("user") || "null")
 
   const [stats, setStats] = useState({
-    completed: 0,
-    accuracy: 0,
+    completed: Number(
+      JSON.parse(
+        localStorage.getItem("solvedChallenges") || "[]"
+      ).length
+    ),
+    accuracy: 100,
+    xp: Number(localStorage.getItem("xp")) || 0,
+    level: Number(localStorage.getItem("level")) || 1,
   })
 
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [openProfile, setOpenProfile] = useState(false)
 
   useEffect(() => {
     api
       .get("/progress/me")
       .then(({ data }) => {
-        setStats(data)
+        setStats({
+          completed:
+            data?.completed ||
+            stats.completed,
 
-        if (data.user) {
-          setUser(data.user)
+          accuracy:
+            data?.accuracy ||
+            100,
+
+          xp:
+            data?.xp ||
+            stats.xp,
+
+          level:
+            data?.level ||
+            stats.level,
+        })
+
+        if (data?.user && store?.setUser) {
+          store.setUser(data.user)
         }
       })
-      .catch(() => {})
+      .catch(() => {
+        setStats({
+          completed: Number(
+            JSON.parse(
+              localStorage.getItem("solvedChallenges") || "[]"
+            ).length
+          ),
+          accuracy: 100,
+          xp: Number(localStorage.getItem("xp")) || 0,
+          level: Number(localStorage.getItem("level")) || 1,
+        })
+      })
       .finally(() => setLoading(false))
   }, [])
 
   const cards = [
     {
       title: "Challenges Solved",
-      value: user?.completed_challenges || stats.completed || 0,
+      value: stats.completed,
       emoji: "🏆",
       color: "#8b5cf6",
     },
     {
       title: "Accuracy",
-      value: `${user?.completed_challenges > 0 ? 100 : 0}%`,
+      value: `${stats.accuracy}%`,
       emoji: "🎯",
       color: "#06b6d4",
     },
     {
       title: "Total XP",
-      value: user?.total_xp || 0,
+      value: stats.xp,
       emoji: "⚡",
       color: "#f59e0b",
     },
@@ -84,30 +121,31 @@ export default function Dashboard() {
           }}
         >
           Welcome back {user?.username || "Coder"} 👋
+
           <button
-  onClick={() => setOpenProfile(true)}
-  style={{
-    marginTop: "15px",
-    padding: "10px 16px",
-    borderRadius: 12,
-    border: "none",
-    background: "#7c3aed",
-    color: "white",
-    fontWeight: "bold",
-    cursor: "pointer"
-  }}
->
-  👤 Profile
-</button>
+            onClick={() => setOpenProfile(true)}
+            style={{
+              marginLeft: "15px",
+              padding: "10px 16px",
+              borderRadius: 12,
+              border: "none",
+              background: "#7c3aed",
+              color: "white",
+              fontWeight: "bold",
+              cursor: "pointer",
+            }}
+          >
+            👤 Profile
+          </button>
         </p>
 
         <div
           style={{
             display: "grid",
             gridTemplateColumns:
-  window.innerWidth < 768
-    ? "1fr"
-    : "repeat(auto-fit,minmax(250px,1fr))",
+              window.innerWidth < 768
+                ? "1fr"
+                : "repeat(auto-fit,minmax(250px,1fr))",
             gap: "25px",
           }}
         >
@@ -125,7 +163,10 @@ export default function Dashboard() {
             >
               <div
                 style={{
-                  fontSize: window.innerWidth < 768 ? "32px" : "45px",
+                  fontSize:
+                    window.innerWidth < 768
+                      ? "32px"
+                      : "45px",
                   marginBottom: "15px",
                 }}
               >
@@ -157,7 +198,10 @@ export default function Dashboard() {
           style={{
             marginTop: "50px",
             background: "#111827",
-            padding: window.innerWidth < 768 ? "20px" : "30px",
+            padding:
+              window.innerWidth < 768
+                ? "20px"
+                : "30px",
             borderRadius: "20px",
           }}
         >
@@ -211,10 +255,11 @@ export default function Dashboard() {
           transform: scale(1.05);
         }
       `}</style>
+
       <ProfileModal
-  open={openProfile}
-  onClose={() => setOpenProfile(false)}
-/>
+        open={openProfile}
+        onClose={() => setOpenProfile(false)}
+      />
     </div>
   )
 }
