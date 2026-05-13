@@ -462,7 +462,7 @@ const speakPraise = () => {
                         lineHeight: 1.6
                       }}
                     >
-                      <pre>{getOutput()}</pre>
+                      
                       <div
   style={{
     marginTop: 16,
@@ -475,6 +475,7 @@ const speakPraise = () => {
     minHeight: 80
   }}
 >
+  <pre>{getOutput()}</pre>                      
   <div style={{ color: "white", marginBottom: 8 }}>
     Output
   </div>
