@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import api from '../api/client'
 import useStore from '../store/useStore'
 
 function AuthPage({ mode }) {
-  const navigate = useNavigate()
-  const { setUser } = useStore()
+  const store = useStore()
   const isLogin = mode === 'login'
 
   const [form, setForm] = useState({
@@ -36,8 +34,11 @@ function AuthPage({ mode }) {
     }
   }, [isLogin])
 
-  const update = (k) => (e) => {
-    setForm((f) => ({ ...f, [k]: e.target.value }))
+  const update = (key) => (e) => {
+    setForm((f) => ({
+      ...f,
+      [key]: e.target.value
+    }))
   }
 
   const validate = () => {
@@ -61,16 +62,15 @@ function AuthPage({ mode }) {
     }
   }
 
-  const afterLogin = async (data) => {
-    localStorage.setItem('g_access', data.access_token)
-    localStorage.setItem('g_refresh', data.refresh_token)
+  const saveUserSession = (userData) => {
+    localStorage.setItem('registeredUser', JSON.stringify(userData))
+    localStorage.setItem('user', JSON.stringify(userData))
+    localStorage.setItem('token', 'local-token')
+    localStorage.setItem('g_access', 'local-token')
+    localStorage.setItem('g_refresh', 'local-refresh-token')
 
-    saveLoginDetails()
-
-    const { data: me } = await api.get('/progress/me')
-    setUser(me)
-
-    navigate('/dashboard')
+    if (store?.setUser) store.setUser(userData)
+    if (store?.login) store.login(userData)
   }
 
   const submit = async () => {
@@ -79,37 +79,52 @@ function AuthPage({ mode }) {
     setLoading(true)
 
     try {
+      const username = form.username.trim()
+      const email = form.email.trim()
+      const password = form.password.trim()
+
       if (isLogin) {
-        const { data } = await api.post('/auth/login', {
-          username: form.username.trim(),
-          password: form.password.trim()
-        })
+        const savedUser = JSON.parse(localStorage.getItem('registeredUser') || 'null')
 
-        await afterLogin(data)
+        if (!savedUser) {
+          toast.error('Account nahi mila. Pehle Sign up karo.')
+          setLoading(false)
+          return
+        }
+
+        if (savedUser.username !== username || savedUser.password !== password) {
+          toast.error('Invalid username or password')
+          setLoading(false)
+          return
+        }
+
+        saveUserSession(savedUser)
+        saveLoginDetails()
+
         toast.success('Login successful!')
-      } else {
-        await api.post('/auth/register', {
-          username: form.username.trim(),
-          email: form.email.trim(),
-          password: form.password.trim()
-        })
-
-        const { data } = await api.post('/auth/login', {
-          username: form.username.trim(),
-          password: form.password.trim()
-        })
-
-        await afterLogin(data)
-        toast.success('Account created successfully!')
+        window.location.href = '/dashboard'
+        return
       }
+
+      const userData = {
+        id: Date.now(),
+        username,
+        email,
+        password,
+        total_xp: Number(localStorage.getItem('xp')) || 0,
+        completed_challenges: JSON.parse(
+          localStorage.getItem('solvedChallenges') || '[]'
+        ).length
+      }
+
+      saveUserSession(userData)
+      saveLoginDetails()
+
+      toast.success('Account created successfully!')
+      window.location.href = '/dashboard'
+      return
     } catch (err) {
-      const msg = err.response?.data?.detail
-
-      if (typeof msg === 'string') {
-        toast.error(msg)
-      } else {
-        toast.error('Something went wrong. Please try again.')
-      }
+      toast.error('Login/Register failed')
     } finally {
       setLoading(false)
     }
@@ -136,22 +151,7 @@ function AuthPage({ mode }) {
           background: 'var(--bg-0)'
         }}
       >
-        <div
-          style={{
-            position: 'fixed',
-            top: '20%',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: 400,
-            height: 400,
-            borderRadius: '50%',
-            background:
-              'radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 70%)',
-            pointerEvents: 'none'
-          }}
-        />
-
-        <div style={{ width: '100%', maxWidth: 420, animation: 'fadeInUp 0.4s ease' }}>
+        <div style={{ width: '100%', maxWidth: 420 }}>
           <div style={{ textAlign: 'center', marginBottom: 36 }}>
             <div
               style={{
@@ -176,9 +176,7 @@ function AuthPage({ mode }) {
             </h1>
 
             <p style={{ fontSize: 14, color: 'var(--text-3)' }}>
-              {isLogin
-                ? 'Sign in to continue your journey'
-                : 'Start your coding adventure today'}
+              {isLogin ? 'Sign in to continue your journey' : 'Start your coding adventure today'}
             </p>
           </div>
 
