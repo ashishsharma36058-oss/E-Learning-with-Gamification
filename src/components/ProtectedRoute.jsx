@@ -1,8 +1,14 @@
 import { Navigate } from 'react-router-dom'
-import useStore from '../store/useStore'
 
 export default function ProtectedRoute({ children }) {
-  const { isLoggedIn } = useStore()
-  if (!isLoggedIn) return <Navigate to="/login" replace />
+  const isLoggedIn =
+    !!localStorage.getItem('g_access') ||
+    !!localStorage.getItem('token') ||
+    !!localStorage.getItem('user')
+
+  if (!isLoggedIn) {
+    return <Navigate to="/login" replace />
+  }
+
   return children
 }
