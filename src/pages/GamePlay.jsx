@@ -247,30 +247,30 @@ export default function GamePlay() {
   }
 
   const checkLocalAnswer = () => {
-    const userOut = String(runCodeOutput(code)).trim()
+  const userOut = String(runCodeOutput(code)).trim()
 
-    let expectedOut = ''
+  let expectedOut = ''
 
-    if (ch?.expected_output) {
-      expectedOut = String(ch.expected_output).trim()
-    } else if (ch?.solution && ch.solution.includes('print(')) {
-      expectedOut = String(runCodeOutput(ch.solution)).trim()
-    }
-
-    const validUserOutput =
-      userOut !== 'Output error' &&
-      userOut !== 'No print statement found' &&
-      userOut !== ''
-
-    const hasExpected =
-      expectedOut &&
-      expectedOut !== 'Output error' &&
-      expectedOut !== 'No print statement found'
-
-    const correct = hasExpected && userOut === expectedOut
-
-    return { correct, userOut, expectedOut }
+  if (ch?.expected_output && String(ch.expected_output).trim() !== '') {
+    expectedOut = String(ch.expected_output).trim()
+  } else if (ch?.solution && String(ch.solution).trim() !== '') {
+    expectedOut = String(runCodeOutput(ch.solution)).trim()
   }
+
+  const invalidOutputs = [
+    'Output error',
+    'No print statement found',
+    'undefined'
+  ]
+
+  const correct =
+    expectedOut !== '' &&
+    !invalidOutputs.includes(userOut) &&
+    !invalidOutputs.includes(expectedOut) &&
+    userOut === expectedOut
+
+  return { correct, userOut, expectedOut }
+}
 
   const completeChallenge = (xp, message) => {
     setResult({
