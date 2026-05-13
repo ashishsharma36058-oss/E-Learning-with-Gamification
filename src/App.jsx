@@ -14,9 +14,20 @@ import { LoginPage, RegisterPage } from './pages/Auth'
 export default function App() {
   const { fetchMe, isLoggedIn } = useStore()
 
-  useEffect(() => {
-    if (localStorage.getItem('g_access')) fetchMe()
-  }, [])
+  const isLoggedIn =
+  !!localStorage.getItem('g_access') ||
+  !!localStorage.getItem('token') ||
+  !!localStorage.getItem('user')
+
+useEffect(() => {
+  if (
+    localStorage.getItem('g_access') ||
+    localStorage.getItem('token') ||
+    localStorage.getItem('user')
+  ) {
+    fetchMe()
+  }
+}, [])
 
   return (
     <BrowserRouter>
