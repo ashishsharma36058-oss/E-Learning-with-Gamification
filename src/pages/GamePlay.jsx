@@ -267,7 +267,7 @@ export default function GamePlay() {
       expectedOut !== 'Output error' &&
       expectedOut !== 'No print statement found'
 
-    const correct = hasExpected ? userOut === expectedOut : validUserOutput
+    const correct = hasExpected && userOut === expectedOut
 
     return { correct, userOut, expectedOut }
   }
@@ -287,60 +287,31 @@ export default function GamePlay() {
   }
 
   const submit = async () => {
-    if (!ch || submitting || timeLeft === 0) return
+  if (!ch || submitting || timeLeft === 0) return
 
-    setSubmitting(true)
-    clearInterval(timerRef.current)
+  setSubmitting(true)
+  clearInterval(timerRef.current)
 
-    const timeTaken = (Date.now() - startTime.current) / 1000
+  try {
+    const local = checkLocalAnswer()
 
-    try {
-      const { data } = await api.post('/challenges/submit', {
-        challenge_id: parseInt(id),
-        code,
-        time_taken: timeTaken,
-        hints_used: hintsUsed
+    if (!local.correct) {
+      setResult({
+        passed: false,
+        message: `Wrong Output ❌ Expected: ${local.expectedOut || 'valid output'}, Got: ${local.userOut || 'No Output'}`,
+        xp_earned: 0
       })
 
-      if (data?.passed) {
-        completeChallenge(data.xp_earned || ch.xp_reward, data.message || getOutput())
-
-        if (data.level_up) {
-          setTimeout(() => setLevelUp(data.new_level), 600)
-        }
-      } else {
-        const local = checkLocalAnswer()
-
-        if (local.correct) {
-          completeChallenge(ch.xp_reward, local.userOut)
-        } else {
-          setResult({
-            passed: false,
-            message: data?.message || `Wrong Output ❌ Expected: ${local.expectedOut || 'valid output'}, Got: ${local.userOut}`,
-            xp_earned: 0
-          })
-
-          toast.error('Wrong Output ❌')
-        }
-      }
-    } catch {
-      const local = checkLocalAnswer()
-
-      if (local.correct) {
-        completeChallenge(ch.xp_reward, local.userOut)
-      } else {
-        setResult({
-          passed: false,
-          message: `Wrong Output ❌ Expected: ${local.expectedOut || 'valid output'}, Got: ${local.userOut}`,
-          xp_earned: 0
-        })
-
-        toast.error('Wrong Output ❌')
-      }
-    } finally {
-      setSubmitting(false)
+      toast.error('Wrong Output ❌')
+      return
     }
+
+    completeChallenge(ch.xp_reward, local.userOut)
+
+  } finally {
+    setSubmitting(false)
   }
+}
 
   if (!ch) {
     return (
