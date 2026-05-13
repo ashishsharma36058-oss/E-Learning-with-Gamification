@@ -22,37 +22,6 @@ const LANG_MAP = {
 }
 
 export default function GamePlay() {
-  const getOutput = () => {
-  try {
-    let vars = {}
-
-    code.split("\n").forEach((line) => {
-      line = line.trim()
-
-      if (line.includes("=") && !line.startsWith("print")) {
-        const [key, value] = line.split("=")
-        vars[key.trim()] = Number(value.trim())
-      }
-    })
-
-    const printMatch = code.match(/print\((.*?)\)/)
-
-    if (!printMatch) return "No print statement found"
-
-    let expr = printMatch[1]
-
-    Object.keys(vars).forEach((v) => {
-      expr = expr.replaceAll(v, vars[v])
-    })
-
-    if (expr.includes('"') || expr.includes("'")) {
-  return expr.replace(/['"]/g, "")
-}
-    return String(eval(expr))
-  } catch (err) {
-    return "Output error: check your code"
-  }
-}
   const { id } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
@@ -60,7 +29,6 @@ export default function GamePlay() {
 
   const [ch, setCh] = useState(null)
   const [code, setCode] = useState('')
-  const [output, setOutput] = useState("")
   const [timeLeft, setTimeLeft] = useState(120)
   const [hintsUsed, setHintsUsed] = useState(0)
   const [submitting, setSubmitting] = useState(false)
@@ -73,47 +41,76 @@ export default function GamePlay() {
   const startTime = useRef(Date.now())
   const timerRef = useRef(null)
 
-const speakPraise = () => {
-  const praise = "Excellent work! Tumne challenge complete kar liya. Keep going, future coder!"
+  const runCodeOutput = (sourceCode) => {
+    try {
+      let vars = {}
 
-  toast.success(praise)
+      sourceCode.split('\n').forEach((line) => {
+        line = line.trim()
 
-  if (!window.speechSynthesis) return
+        if (line.includes('=') && !line.startsWith('print')) {
+          const [key, value] = line.split('=')
+          vars[key.trim()] = Number(value.trim())
+        }
+      })
 
-  window.speechSynthesis.cancel()
+      const printMatch = sourceCode.match(/print\((.*?)\)/)
 
-  const speech = new SpeechSynthesisUtterance(praise)
+      if (!printMatch) return 'No print statement found'
 
-  speech.lang = 'en-IN'
-  speech.rate = 0.9
-  speech.pitch = 1.3
-  speech.volume = 1
+      let expr = printMatch[1].trim()
 
-  const voices = window.speechSynthesis.getVoices()
+      if (
+        (expr.startsWith('"') && expr.endsWith('"')) ||
+        (expr.startsWith("'") && expr.endsWith("'"))
+      ) {
+        return expr.replace(/['"]/g, '')
+      }
 
-  const indianVoice =
-  voices.find(v =>
-    v.lang.includes('en-IN') &&
-    v.name.toLowerCase().includes('female')
-  ) ||
-  voices.find(v =>
-    v.lang.includes('hi-IN')
-  ) ||
-  voices.find(v =>
-    v.name.toLowerCase().includes('zira')
-  ) ||
-  voices.find(v =>
-    v.name.toLowerCase().includes('google')
-  )
+      Object.keys(vars).forEach((v) => {
+        expr = expr.replaceAll(v, vars[v])
+      })
 
-  if (indianVoice) {
-    speech.voice = indianVoice
+      return String(eval(expr))
+    } catch {
+      return 'Output error'
+    }
   }
 
-  setTimeout(() => {
-    window.speechSynthesis.speak(speech)
-  }, 800)
-}
+  const getOutput = () => runCodeOutput(code)
+
+  const speakPraise = () => {
+    const praise = 'Excellent work! Tumne challenge complete kar liya. Keep going, future coder!'
+
+    toast.success(praise)
+
+    if (!window.speechSynthesis) return
+
+    window.speechSynthesis.cancel()
+
+    const speech = new SpeechSynthesisUtterance(praise)
+
+    speech.lang = 'en-IN'
+    speech.rate = 0.9
+    speech.pitch = 1.3
+    speech.volume = 1
+
+    const voices = window.speechSynthesis.getVoices()
+
+    const indianVoice =
+      voices.find((v) => v.lang.includes('en-IN') && v.name.toLowerCase().includes('female')) ||
+      voices.find((v) => v.lang.includes('hi-IN')) ||
+      voices.find((v) => v.name.toLowerCase().includes('zira')) ||
+      voices.find((v) => v.name.toLowerCase().includes('google'))
+
+    if (indianVoice) {
+      speech.voice = indianVoice
+    }
+
+    setTimeout(() => {
+      window.speechSynthesis.speak(speech)
+    }, 800)
+  }
 
   useEffect(() => {
     const savedChallenge = JSON.parse(localStorage.getItem('current_challenge') || 'null')
@@ -142,7 +139,8 @@ const speakPraise = () => {
       return
     }
 
-    api.get(`/challenges/${id}`)
+    api
+      .get(`/challenges/${id}`)
       .then((r) => {
         const data = r.data || {}
 
@@ -207,29 +205,30 @@ const speakPraise = () => {
   }
 
   const generateHint = () => {
-  const hints = {
-    variables: 'Hint: Variable data store karta hai.',
-    loop: 'Hint: Loop repeated task ke liye use hota hai.',
-    function: 'Hint: Function reusable code block hota hai.',
-    list: 'Hint: List multiple values store karta hai.',
-    string: 'Hint: String text data hota hai.',
-    ifelse: 'Hint: if-else decision making ke liye use hota hai.',
-    recursion: 'Hint: Function khud ko call karta hai.',
-    class: 'Hint: Class object banane ka blueprint hota hai.',
-    dictionary: 'Hint: Dictionary key-value pair store karta hai.'
-  }
-
-  const text = ch?.title?.toLowerCase() || ''
-
-  for (const key in hints) {
-    if (text.includes(key)) {
-      setAiHint(hints[key])
-      return
+    const hints = {
+      variables: 'Hint: Variable data store karta hai.',
+      loop: 'Hint: Loop repeated task ke liye use hota hai.',
+      function: 'Hint: Function reusable code block hota hai.',
+      list: 'Hint: List multiple values store karta hai.',
+      string: 'Hint: String text data hota hai.',
+      ifelse: 'Hint: if-else decision making ke liye use hota hai.',
+      recursion: 'Hint: Function khud ko call karta hai.',
+      class: 'Hint: Class object banane ka blueprint hota hai.',
+      dictionary: 'Hint: Dictionary key-value pair store karta hai.'
     }
+
+    const text = ch?.title?.toLowerCase() || ''
+
+    for (const key in hints) {
+      if (text.includes(key)) {
+        setAiHint(hints[key])
+        return
+      }
+    }
+
+    setAiHint('Hint: Problem ko step by step solve karo.')
   }
 
-  setAiHint('Hint: Problem ko step by step solve karo.')
-}
   const submit = async () => {
     if (!ch || submitting || timeLeft === 0) return
 
@@ -262,36 +261,33 @@ const speakPraise = () => {
         toast.error(data.message || 'Try again')
       }
     } catch {
-  const userOut = String(getOutput()).trim()
+      const userOut = String(runCodeOutput(code)).trim()
+      const solutionOut = String(runCodeOutput(ch.solution || '')).trim()
 
-  const solutionCode = ch.solution || ""
-  const solutionOut = String(
-    eval(
-      solutionCode.match(/print\((.*?)\)/)?.[1]
-    )
-  ).trim()
+      const correct = userOut === solutionOut && userOut !== 'Output error'
 
-  const correct = userOut === solutionOut
+      if (correct) {
+        setResult({
+          passed: true,
+          message: userOut,
+          xp_earned: ch.xp_reward
+        })
 
-  if (correct) {
-    setResult({
-      passed: true,
-      message: userOut,
-      xp_earned: ch.xp_reward
-    })
+        setXpFloat(`+${ch.xp_reward} XP`)
+        setTimeout(() => setXpFloat(null), 2500)
 
-    addXP(ch.xp_reward)
-    speakPraise()
-  } else {
-    setResult({
-      passed: false,
-      message: "Wrong Output ❌",
-      xp_earned: 0
-    })
+        addXP(ch.xp_reward)
+        speakPraise()
+      } else {
+        setResult({
+          passed: false,
+          message: `Wrong Output ❌ Expected: ${solutionOut}, Got: ${userOut}`,
+          xp_earned: 0
+        })
 
-    toast.error("Wrong Output ❌")
-  }
-} finally {
+        toast.error('Wrong Output ❌')
+      }
+    } finally {
       setSubmitting(false)
     }
   }
@@ -344,9 +340,7 @@ const speakPraise = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ fontSize: 15, fontWeight: 700 }}>{ch.title}</span>
 
-            <span className={`pill pill-${ch.difficulty}`}>
-              {ch.difficulty}
-            </span>
+            <span className={`pill pill-${ch.difficulty}`}>{ch.difficulty}</span>
 
             <span className="mode-badge">
               {MODE_ICONS[ch.game_mode] || '🎮'} {ch.game_mode}
@@ -375,33 +369,29 @@ const speakPraise = () => {
           💡 Hint ({hints.length - hintsUsed})
         </button>
 
-<button
-  className="btn btn-primary"
-  style={{ padding: '9px 22px', fontSize: 13 }}
-  onClick={submit}
-  disabled={submitting || timeLeft === 0}
->
-  {submitting ? 'Running...' : '▶ Submit'}
-</button>
+        <button
+          className="btn btn-primary"
+          style={{ padding: '9px 22px', fontSize: 13 }}
+          onClick={submit}
+          disabled={submitting || timeLeft === 0}
+        >
+          {submitting ? 'Running...' : '▶ Submit'}
+        </button>
 
-<button
-  onClick={generateHint}
-  style={{
-    marginTop: 12,
-    width: '100%',
-    padding: '12px',
-    borderRadius: 10,
-    border: 'none',
-    background: '#ff9800',
-    color: 'white',
-    fontWeight: 'bold',
-    cursor: 'pointer'
-  }}
->
-  🤖 AI Hint
-</button>
-         
-       
+        <button
+          onClick={generateHint}
+          style={{
+            padding: '9px 16px',
+            borderRadius: 10,
+            border: 'none',
+            background: '#ff9800',
+            color: 'white',
+            fontWeight: 'bold',
+            cursor: 'pointer'
+          }}
+        >
+          🤖 AI Hint
+        </button>
       </div>
 
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
@@ -454,6 +444,23 @@ const speakPraise = () => {
                   {ch.description}
                 </p>
 
+                {aiHint && (
+                  <div
+                    style={{
+                      background: 'rgba(245,158,11,0.08)',
+                      border: '1px solid rgba(245,158,11,0.25)',
+                      borderRadius: 10,
+                      padding: 12,
+                      color: 'var(--amber)',
+                      fontSize: 12,
+                      marginBottom: 14,
+                      lineHeight: 1.6
+                    }}
+                  >
+                    🤖 {aiHint}
+                  </div>
+                )}
+
                 {result && (
                   <div
                     style={{
@@ -476,34 +483,33 @@ const speakPraise = () => {
                       {result.passed ? '✅ Challenge Completed!' : '❌ Try Again'}
                     </div>
 
+                    {!result.passed && (
+                      <div
+                        style={{
+                          fontSize: 12,
+                          color: 'var(--red)',
+                          lineHeight: 1.6,
+                          marginBottom: 12
+                        }}
+                      >
+                        {result.message}
+                      </div>
+                    )}
+
                     <div
                       style={{
-                        fontSize: 12,
-                        color: 'var(--text-2)',
-                        lineHeight: 1.6
+                        marginTop: 16,
+                        background: '#111',
+                        border: '1px solid #333',
+                        borderRadius: 10,
+                        padding: 12,
+                        color: '#00ff99',
+                        fontFamily: 'monospace',
+                        minHeight: 80
                       }}
                     >
-                      
-                      <div
-  style={{
-    marginTop: 16,
-    background: "#111",
-    border: "1px solid #333",
-    borderRadius: 10,
-    padding: 12,
-    color: "#00ff99",
-    fontFamily: "monospace",
-    minHeight: 80
-  }}
->
-                        
-  <div style={{ color: "white", marginBottom: 8 }}>
-    Output
-  </div>
-  <pre>{getOutput()}</pre>                     
-
-
-</div>
+                      <div style={{ color: 'white', marginBottom: 8 }}>Output</div>
+                      <pre>{getOutput()}</pre>
                     </div>
 
                     {result.passed && (
