@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
+import api from '../api/client'
 import useStore from '../store/useStore'
 
 function AuthPage({ mode }) {
   const navigate = useNavigate()
-  const store = useStore()
+  const { setUser } = useStore()
   const isLogin = mode === 'login'
 
   const [form, setForm] = useState({
@@ -60,17 +61,16 @@ function AuthPage({ mode }) {
     }
   }
 
-  const setUserEverywhere = (userData) => {
-    localStorage.setItem('token', 'local-token')
-    localStorage.setItem('user', JSON.stringify(userData))
-    localStorage.setItem('g_access', 'local-token')
-    localStorage.setItem('g_refresh', 'local-refresh-token')
+  const afterLogin = async (data) => {
+    localStorage.setItem('g_access', data.access_token)
+    localStorage.setItem('g_refresh', data.refresh_token)
 
-    if (store.login) {
-      store.login(userData)
-    } else if (store.setUser) {
-      store.setUser(userData)
-    }
+    saveLoginDetails()
+
+    const { data: me } = await api.get('/progress/me')
+    setUser(me)
+
+    navigate('/dashboard')
   }
 
   const submit = async () => {
@@ -79,50 +79,37 @@ function AuthPage({ mode }) {
     setLoading(true)
 
     try {
-      const username = form.username.trim()
-      const email = form.email.trim()
-      const password = form.password.trim()
-
       if (isLogin) {
-        const savedUser = JSON.parse(localStorage.getItem('registeredUser') || 'null')
+        const { data } = await api.post('/auth/login', {
+          username: form.username.trim(),
+          password: form.password.trim()
+        })
 
-        if (!savedUser) {
-          toast.error('Account nahi mila. Pehle Sign up karo.')
-          setLoading(false)
-          return
-        }
-
-        if (savedUser.username !== username || savedUser.password !== password) {
-          toast.error('Invalid username or password')
-          setLoading(false)
-          return
-        }
-
-        setUserEverywhere(savedUser)
-        saveLoginDetails()
-
+        await afterLogin(data)
         toast.success('Login successful!')
-        navigate('/dashboard')
       } else {
-        const userData = {
-          id: Date.now(),
-          username,
-          email,
-          password,
-          level: Number(localStorage.getItem('level')) || 1,
-          xp: Number(localStorage.getItem('xp')) || 0
-        }
+        await api.post('/auth/register', {
+          username: form.username.trim(),
+          email: form.email.trim(),
+          password: form.password.trim()
+        })
 
-        localStorage.setItem('registeredUser', JSON.stringify(userData))
+        const { data } = await api.post('/auth/login', {
+          username: form.username.trim(),
+          password: form.password.trim()
+        })
 
-        setUserEverywhere(userData)
-        saveLoginDetails()
-
+        await afterLogin(data)
         toast.success('Account created successfully!')
-        navigate('/dashboard')
       }
     } catch (err) {
-      toast.error('Login/Register failed')
+      const msg = err.response?.data?.detail
+
+      if (typeof msg === 'string') {
+        toast.error(msg)
+      } else {
+        toast.error('Something went wrong. Please try again.')
+      }
     } finally {
       setLoading(false)
     }
