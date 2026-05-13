@@ -78,69 +78,95 @@ export default function GamePlay() {
   const timerRef = useRef(null)
 
   const runCodeOutput = (sourceCode = '') => {
-    try {
-      const vars = {}
-      const lines = sourceCode.split('\n')
-      const outputs = []
+  try {
+    const vars = {}
+    const lines = sourceCode.split('\n')
+    const outputs = []
 
-      lines.forEach((rawLine) => {
-        const line = rawLine.trim()
+    const cleanValue = (value) => {
+      const v = String(value).trim().replace(/;$/, '')
 
-        if (!line || line.startsWith('#')) return
+      if (
+        (v.startsWith('"') && v.endsWith('"')) ||
+        (v.startsWith("'") && v.endsWith("'"))
+      ) {
+        return v.slice(1, -1)
+      }
 
-        if (line.includes('=') && !line.startsWith('print')) {
-          const [key, ...rest] = line.split('=')
-          const value = rest.join('=').trim()
-          const cleanKey = key.trim()
+      if (!Number.isNaN(Number(v))) return Number(v)
 
-          if (
-            (value.startsWith('"') && value.endsWith('"')) ||
-            (value.startsWith("'") && value.endsWith("'"))
-          ) {
-            vars[cleanKey] = value.slice(1, -1)
-          } else if (!Number.isNaN(Number(value))) {
-            vars[cleanKey] = Number(value)
-          } else {
-            vars[cleanKey] = value
-          }
-        }
-
-        const printMatch = line.match(/^print\((.*?)\)$/s)
-
-        if (printMatch) {
-          let expr = printMatch[1].trim()
-
-          if (!expr) {
-            outputs.push('')
-            return
-          }
-
-          if (
-            (expr.startsWith('"') && expr.endsWith('"')) ||
-            (expr.startsWith("'") && expr.endsWith("'"))
-          ) {
-            outputs.push(expr.slice(1, -1))
-            return
-          }
-
-          Object.keys(vars)
-            .sort((a, b) => b.length - a.length)
-            .forEach((v) => {
-              const value = typeof vars[v] === 'string' ? `"${vars[v]}"` : vars[v]
-              expr = expr.replace(new RegExp(`\\b${v}\\b`, 'g'), value)
-            })
-
-          outputs.push(String(eval(expr)))
-        }
-      })
-
-      if (outputs.length === 0) return 'No print statement found'
-
-      return outputs.join('\n').trim()
-    } catch {
-      return 'Output error'
+      return v
     }
+
+    const evalExpr = (exprRaw) => {
+      let expr = String(exprRaw).trim().replace(/;$/, '')
+
+      if (!expr) return ''
+
+      if (
+        (expr.startsWith('"') && expr.endsWith('"')) ||
+        (expr.startsWith("'") && expr.endsWith("'"))
+      ) {
+        return expr.slice(1, -1)
+      }
+
+      Object.keys(vars)
+        .sort((a, b) => b.length - a.length)
+        .forEach((v) => {
+          const value = typeof vars[v] === 'string' ? `"${vars[v]}"` : vars[v]
+          expr = expr.replace(new RegExp(`\\b${v}\\b`, 'g'), value)
+        })
+
+      return String(eval(expr))
+    }
+
+    lines.forEach((rawLine) => {
+      const line = rawLine.trim()
+
+      if (
+        !line ||
+        line.startsWith('#') ||
+        line.startsWith('//') ||
+        line === '{' ||
+        line === '}'
+      ) {
+        return
+      }
+
+      const varMatch =
+        line.match(/^(?:let|const|var|int|double|float|String|string)?\s*([a-zA-Z_]\w*)\s*=\s*(.+);?$/)
+
+      if (varMatch && !line.includes('print') && !line.includes('cout') && !line.includes('System.out')) {
+        vars[varMatch[1]] = cleanValue(varMatch[2])
+      }
+
+      const printMatch =
+        line.match(/^print\((.*?)\)$/s) ||
+        line.match(/^console\.log\((.*?)\);?$/s) ||
+        line.match(/^System\.out\.println\((.*?)\);?$/s) ||
+        line.match(/^cout\s*<<\s*(.*?)\s*;?$/s)
+
+      if (printMatch) {
+        let expr = printMatch[1]
+
+        if (line.includes('cout')) {
+          expr = expr
+            .replace(/<<\s*endl/g, '')
+            .replace(/endl/g, '')
+            .trim()
+        }
+
+        outputs.push(evalExpr(expr))
+      }
+    })
+
+    if (outputs.length === 0) return 'No print statement found'
+
+    return outputs.join('\n').trim()
+  } catch {
+    return 'Output error'
   }
+}
 
   const getOutput = () => runCodeOutput(code)
 
